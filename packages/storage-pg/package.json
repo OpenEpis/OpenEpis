@@ -1,0 +1,40 @@
+{
+  "name": "@openepis/storage-pg",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "drizzle"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src",
+    "format": "prettier --write src",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@openepis/storage": "workspace:*",
+    "@openepis/types": "workspace:*",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.44.0",
+    "postgres": "^3.4.5",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "drizzle-kit": "^0.31.0",
+    "typescript": "^5.7.0"
+  }
+}

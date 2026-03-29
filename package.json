@@ -11,6 +11,10 @@
     "lint": "turbo lint",
     "format": "turbo format",
     "format:check": "prettier --check .",
+    "db:pg:generate": "turbo db:generate --filter=@openepis/storage-pg",
+    "db:pg:migrate": "turbo db:migrate --filter=@openepis/storage-pg",
+    "db:pg:push": "turbo db:push --filter=@openepis/storage-pg",
+    "db:pg:studio": "turbo db:studio --filter=@openepis/storage-pg",
     "prepare": "husky"
   },
   "devDependencies": {

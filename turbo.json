@@ -12,6 +12,19 @@
     "lint": {
       "dependsOn": ["^build"]
     },
-    "format": {}
+    "format": {},
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    }
   }
 }
