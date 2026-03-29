@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 
 export function AppLayout() {
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -22,9 +24,9 @@ export function AppLayout() {
       {/* Mobile sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent side="left" className="w-60 p-0">
-          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SheetTitle className="sr-only">{t("header.navigation")}</SheetTitle>
           <SheetDescription className="sr-only">
-            Project navigation sidebar
+            {t("header.navigationDescription")}
           </SheetDescription>
           <Sidebar />
         </SheetContent>

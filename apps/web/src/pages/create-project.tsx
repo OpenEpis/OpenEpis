@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +13,7 @@ import {
 import { useCreateProject } from "@/hooks/use-projects";
 
 export function CreateProjectPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const createProject = useCreateProject();
   const [name, setName] = useState("");
@@ -21,7 +23,7 @@ export function CreateProjectPage() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      setNameError("Project name is required");
+      setNameError(t("createProject.nameRequired"));
       return;
     }
     setNameError("");
@@ -39,19 +41,19 @@ export function CreateProjectPage() {
     <div className="mx-auto max-w-lg">
       <Card>
         <CardHeader>
-          <CardTitle>Create Project</CardTitle>
+          <CardTitle>{t("createProject.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium">
-                Name <span className="text-destructive">*</span>
+                {t("createProject.nameLabel")} <span className="text-destructive">*</span>
               </label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="My Project"
+                placeholder={t("createProject.namePlaceholder")}
               />
               {nameError && (
                 <p className="text-sm text-destructive">{nameError}</p>
@@ -59,13 +61,13 @@ export function CreateProjectPage() {
             </div>
             <div className="space-y-2">
               <label htmlFor="description" className="text-sm font-medium">
-                Description
+                {t("createProject.descriptionLabel")}
               </label>
               <Textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Optional project description"
+                placeholder={t("createProject.descriptionPlaceholder")}
                 rows={3}
               />
             </div>
@@ -74,14 +76,14 @@ export function CreateProjectPage() {
                 type="submit"
                 disabled={createProject.isPending}
               >
-                {createProject.isPending ? "Creating..." : "Create"}
+                {createProject.isPending ? t("createProject.creating") : t("createProject.create")}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => navigate(-1)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             </div>
             {createProject.isError && (

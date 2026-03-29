@@ -1,5 +1,6 @@
 import React from "react";
 import { useMatches } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Menu } from "lucide-react";
 import {
   Breadcrumb,
@@ -9,6 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 interface BreadcrumbHandle {
   breadcrumb: string | ((data: unknown) => string);
@@ -19,16 +21,18 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
+  const { t } = useTranslation();
   const matches = useMatches();
 
   const crumbs = matches
     .filter((m) => (m.handle as BreadcrumbHandle | undefined)?.breadcrumb)
     .map((m) => {
       const handle = m.handle as BreadcrumbHandle;
-      const label =
+      const raw =
         typeof handle.breadcrumb === "function"
           ? handle.breadcrumb(m.data)
           : handle.breadcrumb;
+      const label = raw.startsWith("breadcrumb.") ? t(raw) : raw;
       return { path: m.pathname, label };
     });
 
@@ -42,7 +46,7 @@ export function Header({ onMenuClick }: HeaderProps) {
       >
         <Menu className="h-4 w-4" />
       </Button>
-      <Breadcrumb>
+      <Breadcrumb className="flex-1">
         <BreadcrumbList>
           {crumbs.map((crumb, i) => (
             <React.Fragment key={crumb.path}>
@@ -56,6 +60,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           ))}
         </BreadcrumbList>
       </Breadcrumb>
+      <LanguageSwitcher />
     </header>
   );
 }

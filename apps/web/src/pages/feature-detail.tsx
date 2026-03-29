@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
 import { History } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +21,7 @@ const statusColors: Record<string, string> = {
 };
 
 export function FeatureDetailPage() {
+  const { t } = useTranslation();
   const { projectId, featureId } = useParams();
   const { data: feature, isLoading, error } = useFeature(featureId!);
 
@@ -36,7 +38,7 @@ export function FeatureDetailPage() {
   if (error || !feature) {
     return (
       <div className="text-destructive">
-        {error?.message || "Feature not found"}
+        {error?.message || t("featureDetail.notFound")}
       </div>
     );
   }
@@ -55,7 +57,7 @@ export function FeatureDetailPage() {
             to={`/projects/${projectId}/features/${featureId}/revisions`}
           >
             <History className="mr-2 h-4 w-4" />
-            History
+            {t("featureDetail.history")}
           </Link>
         </Button>
       </div>
@@ -68,7 +70,7 @@ export function FeatureDetailPage() {
           {feature.status}
         </Badge>
         <span className="text-sm text-muted-foreground">
-          v{feature.version}
+          {t("common.version", { version: feature.version })}
         </span>
         {feature.tags.map((tag) => (
           <Badge key={tag} variant="outline">
@@ -81,7 +83,7 @@ export function FeatureDetailPage() {
 
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">
-          Scenarios ({feature.scenarios.length})
+          {t("featureDetail.scenarios", { count: feature.scenarios.length })}
         </h2>
         {feature.scenarios.map((scenario) => (
           <Card key={scenario.id}>

@@ -1,5 +1,6 @@
 import { Link, useParams, useLocation } from "react-router";
 import { useAtom } from "jotai";
+import { useTranslation } from "react-i18next";
 import {
   FolderOpen,
   LayoutDashboard,
@@ -14,6 +15,7 @@ import { sidebarCollapsedAtom } from "@/store/ui";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useAtom(sidebarCollapsedAtom);
   const { projectId } = useParams();
   const location = useLocation();
@@ -49,7 +51,7 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto p-2">
         {!collapsed && (
           <p className="mb-1 px-2 text-xs font-medium text-muted-foreground">
-            Projects
+            {t("sidebar.projects")}
           </p>
         )}
         {data?.projects.map((project) => (
@@ -74,7 +76,7 @@ export function Sidebar() {
             <Separator className="my-2" />
             {!collapsed && (
               <p className="mb-1 px-2 text-xs font-medium text-muted-foreground">
-                Current Project
+                {t("sidebar.currentProject")}
               </p>
             )}
             <Link
@@ -86,7 +88,7 @@ export function Sidebar() {
               )}
             >
               <LayoutDashboard className="h-4 w-4 shrink-0" />
-              {!collapsed && <span>Overview</span>}
+              {!collapsed && <span>{t("sidebar.overview")}</span>}
             </Link>
             <Link
               to={`/projects/${projectId}/features`}
@@ -98,7 +100,7 @@ export function Sidebar() {
               )}
             >
               <FileText className="h-4 w-4 shrink-0" />
-              {!collapsed && <span>Features</span>}
+              {!collapsed && <span>{t("sidebar.features")}</span>}
             </Link>
           </>
         )}

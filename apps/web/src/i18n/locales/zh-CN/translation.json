@@ -1,0 +1,104 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "cancel": "取消",
+    "create": "创建",
+    "delete": "删除",
+    "add": "添加",
+    "save": "保存",
+    "back": "返回",
+    "goToProjects": "前往项目列表",
+    "created": "创建于 {{date}}",
+    "by": "由 {{name}} 于 {{date}}",
+    "version": "v{{version}}",
+    "versionLabel": "版本 {{version}}",
+    "feature_one": "{{count}} 个特性",
+    "feature_other": "{{count}} 个特性",
+    "scenario_one": "{{count}} 个场景",
+    "scenario_other": "{{count}} 个场景"
+  },
+  "projects": {
+    "title": "项目",
+    "createProject": "创建项目",
+    "emptyState": "暂无项目。创建你的第一个项目来开始使用。",
+    "loadError": "加载项目失败：{{message}}",
+    "notFound": "项目未找到"
+  },
+  "createProject": {
+    "title": "创建项目",
+    "nameLabel": "名称",
+    "nameRequired": "项目名称为必填项",
+    "namePlaceholder": "我的项目",
+    "descriptionLabel": "描述",
+    "descriptionPlaceholder": "可选的项目描述",
+    "creating": "创建中...",
+    "create": "创建"
+  },
+  "projectDetail": {
+    "project": "项目",
+    "features": "特性",
+    "repositories": "代码仓库",
+    "viewFeatures": "查看特性",
+    "addRepository": "添加仓库",
+    "noRepositories": "暂无关联的代码仓库。",
+    "deleteRepository": "删除仓库",
+    "confirmDelete": "确定要移除 <strong>{{name}}</strong> 吗？",
+    "deleting": "删除中...",
+    "adding": "添加中...",
+    "repoNameLabel": "名称",
+    "repoNamePlaceholder": "my-repo",
+    "gitUrlLabel": "Git URL",
+    "gitUrlPlaceholder": "https://github.com/org/repo.git",
+    "defaultBranchLabel": "默认分支",
+    "defaultBranchPlaceholder": "main"
+  },
+  "features": {
+    "title": "特性",
+    "searchPlaceholder": "搜索特性...",
+    "allStatuses": "所有状态",
+    "statusDraft": "草稿",
+    "statusActive": "活跃",
+    "statusDeprecated": "已废弃",
+    "emptyState": "未找到 BDD 特性。",
+    "loadError": "加载特性失败：{{message}}"
+  },
+  "featureDetail": {
+    "history": "历史记录",
+    "scenarios": "场景 ({{count}})",
+    "notFound": "特性未找到"
+  },
+  "revisions": {
+    "title": "修订历史",
+    "emptyState": "暂无修订记录。",
+    "loadError": "加载修订记录失败：{{message}}",
+    "versionSnapshot": "版本 {{version}} 快照",
+    "notFound": "修订版本未找到"
+  },
+  "sidebar": {
+    "projects": "项目",
+    "currentProject": "当前项目",
+    "overview": "概览",
+    "features": "特性"
+  },
+  "header": {
+    "navigation": "导航",
+    "navigationDescription": "项目导航侧边栏"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "页面未找到"
+  },
+  "errors": {
+    "generic": "出了点问题",
+    "notFound": "未找到"
+  },
+  "breadcrumb": {
+    "projects": "项目",
+    "newProject": "新建项目",
+    "project": "项目",
+    "features": "特性",
+    "feature": "特性",
+    "revisions": "修订记录",
+    "revision": "修订版本"
+  }
+}

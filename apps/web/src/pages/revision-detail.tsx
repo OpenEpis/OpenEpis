@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
 import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,7 @@ import { BddSteps } from "@/components/bdd-steps";
 import { useRevision } from "@/hooks/use-features";
 
 export function RevisionDetailPage() {
+  const { t } = useTranslation();
   const { projectId, featureId, version } = useParams();
   const versionNum = Number(version);
   const { data: feature, isLoading, error } = useRevision(
@@ -33,7 +35,7 @@ export function RevisionDetailPage() {
   if (error || !feature) {
     return (
       <div className="text-destructive">
-        {error?.message || "Revision not found"}
+        {error?.message || t("revisions.notFound")}
       </div>
     );
   }
@@ -51,7 +53,7 @@ export function RevisionDetailPage() {
         <div>
           <h1 className="text-2xl font-bold">{feature.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Version {versionNum} snapshot
+            {t("revisions.versionSnapshot", { version: versionNum })}
           </p>
         </div>
       </div>
@@ -73,7 +75,7 @@ export function RevisionDetailPage() {
 
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">
-          Scenarios ({feature.scenarios.length})
+          {t("featureDetail.scenarios", { count: feature.scenarios.length })}
         </h2>
         {feature.scenarios.map((scenario, i) => (
           <Card key={i}>

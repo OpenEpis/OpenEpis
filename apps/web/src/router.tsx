@@ -19,7 +19,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "projects",
-        handle: { breadcrumb: "Projects" },
+        handle: { breadcrumb: "breadcrumb.projects" },
         children: [
           {
             index: true,
@@ -28,11 +28,11 @@ export const router = createBrowserRouter([
           {
             path: "new",
             element: <CreateProjectPage />,
-            handle: { breadcrumb: "New Project" },
+            handle: { breadcrumb: "breadcrumb.newProject" },
           },
           {
             path: ":projectId",
-            handle: { breadcrumb: "Project" },
+            handle: { breadcrumb: "breadcrumb.project" },
             children: [
               {
                 index: true,
@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: "features",
-                handle: { breadcrumb: "Features" },
+                handle: { breadcrumb: "breadcrumb.features" },
                 children: [
                   {
                     index: true,
@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
                   },
                   {
                     path: ":featureId",
-                    handle: { breadcrumb: "Feature" },
+                    handle: { breadcrumb: "breadcrumb.feature" },
                     children: [
                       {
                         index: true,
@@ -56,7 +56,7 @@ export const router = createBrowserRouter([
                       },
                       {
                         path: "revisions",
-                        handle: { breadcrumb: "Revisions" },
+                        handle: { breadcrumb: "breadcrumb.revisions" },
                         children: [
                           {
                             index: true,
@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
                           {
                             path: ":version",
                             element: <RevisionDetailPage />,
-                            handle: { breadcrumb: "Revision" },
+                            handle: { breadcrumb: "breadcrumb.revision" },
                           },
                         ],
                       },

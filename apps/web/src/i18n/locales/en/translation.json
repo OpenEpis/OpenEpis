@@ -1,0 +1,104 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "add": "Add",
+    "save": "Save",
+    "back": "Back",
+    "goToProjects": "Go to Projects",
+    "created": "Created {{date}}",
+    "by": "by {{name}} on {{date}}",
+    "version": "v{{version}}",
+    "versionLabel": "Version {{version}}",
+    "feature_one": "{{count}} feature",
+    "feature_other": "{{count}} features",
+    "scenario_one": "{{count}} scenario",
+    "scenario_other": "{{count}} scenarios"
+  },
+  "projects": {
+    "title": "Projects",
+    "createProject": "Create Project",
+    "emptyState": "No projects yet. Create your first project to get started.",
+    "loadError": "Failed to load projects: {{message}}",
+    "notFound": "Project not found"
+  },
+  "createProject": {
+    "title": "Create Project",
+    "nameLabel": "Name",
+    "nameRequired": "Project name is required",
+    "namePlaceholder": "My Project",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Optional project description",
+    "creating": "Creating...",
+    "create": "Create"
+  },
+  "projectDetail": {
+    "project": "Project",
+    "features": "Features",
+    "repositories": "Repositories",
+    "viewFeatures": "View Features",
+    "addRepository": "Add Repository",
+    "noRepositories": "No repositories linked yet.",
+    "deleteRepository": "Delete Repository",
+    "confirmDelete": "Are you sure you want to remove <strong>{{name}}</strong>?",
+    "deleting": "Deleting...",
+    "adding": "Adding...",
+    "repoNameLabel": "Name",
+    "repoNamePlaceholder": "my-repo",
+    "gitUrlLabel": "Git URL",
+    "gitUrlPlaceholder": "https://github.com/org/repo.git",
+    "defaultBranchLabel": "Default Branch",
+    "defaultBranchPlaceholder": "main"
+  },
+  "features": {
+    "title": "Features",
+    "searchPlaceholder": "Search features...",
+    "allStatuses": "All statuses",
+    "statusDraft": "Draft",
+    "statusActive": "Active",
+    "statusDeprecated": "Deprecated",
+    "emptyState": "No BDD features found.",
+    "loadError": "Failed to load features: {{message}}"
+  },
+  "featureDetail": {
+    "history": "History",
+    "scenarios": "Scenarios ({{count}})",
+    "notFound": "Feature not found"
+  },
+  "revisions": {
+    "title": "Revision History",
+    "emptyState": "No revisions found.",
+    "loadError": "Failed to load revisions: {{message}}",
+    "versionSnapshot": "Version {{version}} snapshot",
+    "notFound": "Revision not found"
+  },
+  "sidebar": {
+    "projects": "Projects",
+    "currentProject": "Current Project",
+    "overview": "Overview",
+    "features": "Features"
+  },
+  "header": {
+    "navigation": "Navigation",
+    "navigationDescription": "Project navigation sidebar"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Page not found"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "notFound": "Not found"
+  },
+  "breadcrumb": {
+    "projects": "Projects",
+    "newProject": "New Project",
+    "project": "Project",
+    "features": "Features",
+    "feature": "Feature",
+    "revisions": "Revisions",
+    "revision": "Revision"
+  }
+}

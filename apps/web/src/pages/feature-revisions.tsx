@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
 import { Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Card,
   CardDescription,
@@ -8,8 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRevisions } from "@/hooks/use-features";
+import { formatDate } from "@/lib/utils";
 
 export function FeatureRevisionsPage() {
+  const { t, i18n } = useTranslation();
   const { projectId, featureId } = useParams();
   const { data, isLoading, error } = useRevisions(featureId!);
 
@@ -32,17 +35,17 @@ export function FeatureRevisionsPage() {
   if (error) {
     return (
       <div className="text-destructive">
-        Failed to load revisions: {error.message}
+        {t("revisions.loadError", { message: error.message })}
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Revision History</h1>
+      <h1 className="text-2xl font-bold">{t("revisions.title")}</h1>
 
       {data && data.revisions.length === 0 && (
-        <p className="text-muted-foreground">No revisions found.</p>
+        <p className="text-muted-foreground">{t("revisions.emptyState")}</p>
       )}
 
       <div className="space-y-3">
@@ -56,14 +59,16 @@ export function FeatureRevisionsPage() {
                 <Clock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <div className="space-y-1">
                   <CardTitle className="text-sm font-medium">
-                    Version {rev.version}
+                    {t("common.versionLabel", { version: rev.version })}
                   </CardTitle>
                   <CardDescription>
                     {rev.change_summary}
                   </CardDescription>
                   <p className="text-xs text-muted-foreground">
-                    by {rev.changed_by.name} on{" "}
-                    {new Date(rev.created_at).toLocaleDateString()}
+                    {t("common.by", {
+                      name: rev.changed_by.name,
+                      date: formatDate(rev.created_at, i18n.language),
+                    })}
                   </p>
                 </div>
               </CardHeader>

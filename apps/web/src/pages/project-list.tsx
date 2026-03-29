@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,24 +10,26 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProjects } from "@/hooks/use-projects";
+import { formatDate } from "@/lib/utils";
 
 export function ProjectListPage() {
+  const { t, i18n } = useTranslation();
   const { data, isLoading, error } = useProjects();
 
   if (error) {
     return (
-      <div className="text-destructive">Failed to load projects: {error.message}</div>
+      <div className="text-destructive">{t("projects.loadError", { message: error.message })}</div>
     );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Projects</h1>
+        <h1 className="text-2xl font-bold">{t("projects.title")}</h1>
         <Button asChild>
           <Link to="/projects/new">
             <Plus className="mr-2 h-4 w-4" />
-            Create Project
+            {t("projects.createProject")}
           </Link>
         </Button>
       </div>
@@ -47,12 +50,12 @@ export function ProjectListPage() {
       {data && data.projects.length === 0 && (
         <Card className="py-12 text-center">
           <p className="mb-4 text-muted-foreground">
-            No projects yet. Create your first project to get started.
+            {t("projects.emptyState")}
           </p>
           <Button asChild>
             <Link to="/projects/new">
               <Plus className="mr-2 h-4 w-4" />
-              Create Project
+              {t("projects.createProject")}
             </Link>
           </Button>
         </Card>
@@ -67,11 +70,10 @@ export function ProjectListPage() {
                   <CardTitle className="text-lg">{project.name}</CardTitle>
                   <CardDescription className="flex items-center justify-between">
                     <span>
-                      {project.feature_count}{" "}
-                      {project.feature_count === 1 ? "feature" : "features"}
+                      {t("common.feature", { count: project.feature_count })}
                     </span>
                     <span>
-                      {new Date(project.created_at).toLocaleDateString()}
+                      {formatDate(project.created_at, i18n.language)}
                     </span>
                   </CardDescription>
                 </CardHeader>
