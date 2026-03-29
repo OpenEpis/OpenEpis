@@ -95,7 +95,7 @@ export async function featureRoutes(
         version: 1,
         tags: tags ?? [],
         sort_order: 0,
-        created_by: "system",
+        created_by: request.user.id,
       });
 
       if (scenarios) {
@@ -127,7 +127,7 @@ export async function featureRoutes(
           })),
         },
         change_summary: "Initial version",
-        changed_by: "system",
+        changed_by: request.user.id,
       });
 
       return reply.status(201).send(feature);
@@ -185,7 +185,7 @@ export async function featureRoutes(
           })),
         },
         change_summary: `Updated to version ${newVersion}`,
-        changed_by: "system",
+        changed_by: request.user.id,
       });
 
       return reply.send(feature);

@@ -54,7 +54,7 @@ export async function projectRoutes(
       const project = await storage.projects.create({
         name,
         description: description ?? null,
-        created_by: "system",
+        created_by: request.user.id,
       });
       return reply.status(201).send(project);
     },

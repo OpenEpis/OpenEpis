@@ -1,19 +1,4 @@
-## ADDED Requirements
-
-### Requirement: Get async task status
-
-The server SHALL handle `GET /api/tasks/:id` and return `TaskStatusResponse`.
-SDK mapping: `client.tasks.get(id)` → `TaskStatusResponse`.
-
-#### Scenario: Successful task retrieval
-
-- **WHEN** client sends `GET /api/tasks/:id` for an existing async task
-- **THEN** server returns HTTP 200 with body matching `TaskStatusResponse`: `{ "id", "type", "status", "progress", "result", "error", "created_at" }`
-
-#### Scenario: Task not found
-
-- **WHEN** client sends `GET /api/tasks/:id` for a non-existent ID
-- **THEN** server returns HTTP 404 with `ApiError` containing code `"NOT_FOUND"`
+## MODIFIED Requirements
 
 ### Requirement: Trigger BDD initialization
 

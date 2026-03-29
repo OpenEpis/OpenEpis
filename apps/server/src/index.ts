@@ -8,6 +8,8 @@ import { repositoryRoutes } from "./routes/repositories.js";
 import { featureRoutes } from "./routes/features.js";
 import { taskRoutes } from "./routes/tasks.js";
 import { contextRoutes } from "./routes/context.js";
+import { currentUserPlugin } from "./plugins/current-user.js";
+import "./types.js";
 
 const container = new Container();
 container.register(TOKENS.StorageService, () => new PostgresStorageService());
@@ -15,6 +17,9 @@ container.register(TOKENS.StorageService, () => new PostgresStorageService());
 const app = Fastify({ logger: true });
 
 app.setErrorHandler(errorHandler);
+
+const storage = container.resolve(TOKENS.StorageService);
+app.register(currentUserPlugin, { storage });
 
 app.get("/api/health", async () => {
   return { status: "ok" };

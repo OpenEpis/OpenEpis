@@ -43,7 +43,7 @@ export async function taskRoutes(
       progress: 0,
       result: null,
       error: null,
-      created_by: "system",
+      created_by: request.user.id,
     });
 
     return reply.status(202).send({
