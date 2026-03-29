@@ -5,3 +5,7 @@ dist
 .env.*
 !.env.example
 .turbo
+
+# openspec: ignore active changes (personal workspace), keep archive
+openspec/changes/*/
+!openspec/changes/archive/

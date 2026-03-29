@@ -11,6 +11,7 @@
     "format": "prettier --write src"
   },
   "dependencies": {
+    "@openepis/types": "workspace:*",
     "fastify": "^5.0.0"
   },
   "devDependencies": {
