@@ -14,5 +14,3 @@ export type {
 } from "./interfaces/index.js";
 
 export type { CreateInput, UpdateInput } from "./types.js";
-
-export { STORAGE_SERVICE } from "./token.js";

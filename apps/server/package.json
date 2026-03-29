@@ -11,7 +11,10 @@
     "format": "prettier --write src"
   },
   "dependencies": {
+    "@openepis/storage": "workspace:*",
+    "@openepis/storage-pg": "workspace:*",
     "@openepis/types": "workspace:*",
+    "dotenv": "^16.4.7",
     "fastify": "^5.0.0"
   },
   "devDependencies": {

@@ -8,6 +8,11 @@ import { mapRow } from "../map-row.js";
 export class PostgresProjectStorage implements IProjectStorage {
   constructor(private db: Database) {}
 
+  async findAll(): Promise<Project[]> {
+    const rows = await this.db.select().from(projects);
+    return rows.map((r) => mapRow<Project>(r));
+  }
+
   async findById(id: string): Promise<Project | null> {
     const rows = await this.db.select().from(projects).where(eq(projects.id, id));
     return rows[0] ? mapRow<Project>(rows[0]) : null;

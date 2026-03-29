@@ -1,5 +1,3 @@
-import "reflect-metadata";
-import { injectable } from "tsyringe";
 import type { IStorageService } from "@openepis/storage";
 import { createConnection } from "./connection.js";
 import { PostgresUserStorage } from "./repositories/user-storage.js";
@@ -15,7 +13,6 @@ import { PostgresAsyncTaskStorage } from "./repositories/async-task-storage.js";
 import { PostgresLlmConfigStorage } from "./repositories/llm-config-storage.js";
 import type postgres from "postgres";
 
-@injectable()
 export class PostgresStorageService implements IStorageService {
   public readonly users: PostgresUserStorage;
   public readonly projects: PostgresProjectStorage;

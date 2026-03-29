@@ -1,5 +1,4 @@
 export { PostgresStorageService } from "./postgres-storage-service.js";
-export { registerPostgresStorage } from "./container.js";
 export { createConnection } from "./connection.js";
 export type { Database } from "./connection.js";
 
