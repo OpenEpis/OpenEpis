@@ -7,6 +7,10 @@ tags: [workflow, archive, experimental]
 
 Archive a completed change in the experimental workflow.
 
+**IMPORTANT: Working Directory Check**
+
+Before doing anything else, verify that the current working directory is the **repository root** (where `openspec/` and `.claude/` directories live). Run `pwd` and check. If you are in a subdirectory (e.g., `apps/web/`), `cd` to the repository root first. All `openspec` CLI commands and relative paths in this skill assume the root directory. Running from a subdirectory will cause `openspec init` or other commands to create files in the wrong location.
+
 **Input**: Optionally specify a change name after `/opsx:archive` (e.g., `/opsx:archive add-auth`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 **Steps**

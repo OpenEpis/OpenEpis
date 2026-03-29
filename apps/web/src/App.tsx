@@ -1,8 +1,6 @@
+import { RouterProvider } from "react-router";
+import { router } from "./router";
+
 export function App() {
-  return (
-    <div>
-      <h1>OpenEpis</h1>
-      <p>Welcome!</p>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
