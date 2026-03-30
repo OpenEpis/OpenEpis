@@ -29,27 +29,28 @@
          │                            │
          ▼                            ▼
 ┌─────────────────┐        ┌───────────────────┐
-│   PostgreSQL     │        │   AI Service      │
-│                 │        │   (LLM Adapter)   │
+│   PostgreSQL     │        │  @openepis/core   │
+│                 │        │  (Agent Engine)   │
 │  All persistent │        │                   │
-│  state          │        │  - Analyze PRD    │
-│                 │        │  - Retrieve BDD   │
-│                 │        │  - Generate Qs    │
-│                 │        │  - Generate BDD   │
-│                 │        │  - Analyze code   │
+│  state          │        │  Pi Agent Core +  │
+│                 │        │  Pi AI            │
+│                 │        │                   │
+│                 │        │  - BDD generation │
+│                 │        │  - Context assembly│
+│                 │        │  - Tool execution │
 └─────────────────┘        └───────────────────┘
 ```
 
 ## Tech Stack
 
-| Layer     | Technology                              | Notes                                         |
-| --------- | --------------------------------------- | --------------------------------------------- |
-| Frontend  | React + Vite + TypeScript               | Already scaffolded in `apps/web`              |
-| Backend   | Fastify + TypeScript                    | Already scaffolded in `apps/server`           |
-| Database  | PostgreSQL                              | Structured BDD data + conversation history    |
-| ORM/Query | TBD (Drizzle / Prisma / Kysely)         |                                               |
-| AI        | Multi-provider (Claude, OpenAI, Ollama) | Unified interface, provider-specific adapters |
-| Monorepo  | pnpm + Turborepo                        | Already configured                            |
+| Layer     | Technology                                           | Notes                                                                                 |
+| --------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Frontend  | React + Vite + TypeScript                            | Already scaffolded in `apps/web`                                                      |
+| Backend   | Fastify + TypeScript                                 | Already scaffolded in `apps/server`                                                   |
+| Database  | PostgreSQL                                           | Structured BDD data + conversation history                                            |
+| ORM/Query | Drizzle ORM                                          | PostgreSQL with `postgres` driver                                                     |
+| AI        | Pi Agent Core + Pi AI (Claude, OpenAI, Ollama, etc.) | Agent workflow engine, see [core-agent-architecture.md](./core-agent-architecture.md) |
+| Monorepo  | pnpm + Turborepo                                     | Already configured                                                                    |
 
 ## Key Architectural Decisions
 
@@ -64,24 +65,21 @@
 - BDD is cross-repo (one Feature can span frontend + backend)
 - Avoids confusion between "BDD files in repo" vs "source of truth in platform"
 
-### 2. Multi-LLM Provider Support
+### 2. Agent-based BDD Generation with Pi
 
-**Decision**: Abstract LLM behind a provider interface; support Claude, OpenAI, Ollama.
+**Decision**: Use [pi-agent-core](https://github.com/badlogic/pi-mono/tree/main/packages/agent) + [pi-ai](https://github.com/badlogic/pi-mono/tree/main/packages/ai) as the agent runtime for conversational BDD generation. Replaces the previous `@openepis/llm` package (Vercel AI SDK wrapper).
 
-**Interface**:
+**Why Pi over Vercel AI SDK**: Pi provides a stateful `Agent` class with structured events, `transformContext` hooks, tool execution control, and mid-run steering — all features needed for the BDD agent workflow that Vercel AI SDK's `streamText` does not offer.
 
-```typescript
-interface LLMProvider {
-  chat(messages: Message[], options: ChatOptions): AsyncIterable<ChatChunk>;
-  analyze(content: string, prompt: string): Promise<AnalysisResult>;
-}
-```
+**Architecture**: `@openepis/core` wraps Pi Agent, defines domain tools (`update_bdd`, `get_feature_detail`, `search_features`), and exposes a `createBddAgent()` factory. Storage access is injected via `IBddContextService` (dependency inversion).
 
-**Configuration levels** (future):
+**Configuration levels**:
 
-- Platform-level: default provider for the deployment
+- Platform-level: default provider for the deployment (stored in `llm_configs` table)
 - Project-level: override per project
-- MVP: platform-level only, single provider configured via env
+- `core` receives resolved `{ provider, modelId, apiKey }` — does not read DB directly
+
+See [core-agent-architecture.md](./core-agent-architecture.md) for full design.
 
 ### 3. Server-side Code Clone for Initialization
 
