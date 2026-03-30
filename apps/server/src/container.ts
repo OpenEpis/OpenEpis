@@ -1,11 +1,17 @@
 import type { IStorageService } from "@openepis/storage";
+import type { ILlmService } from "@openepis/llm";
+
+const StorageService: unique symbol = Symbol.for("IStorageService");
+const LlmService: unique symbol = Symbol.for("ILlmService");
 
 export const TOKENS = {
-  StorageService: Symbol.for("IStorageService"),
+  StorageService,
+  LlmService,
 } as const;
 
 type TokenMap = {
-  [TOKENS.StorageService]: IStorageService;
+  [StorageService]: IStorageService;
+  [LlmService]: ILlmService;
 };
 
 export class Container {

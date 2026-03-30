@@ -3,14 +3,19 @@ import type { LlmConfig } from "@openepis/types";
 import type { ILlmConfigStorage, CreateInput, UpdateInput } from "@openepis/storage";
 import { llmConfigs } from "../schema/index.js";
 import type { Database } from "../connection.js";
-import { mapRow, mapRows } from "../map-row.js";
+import { mapRow } from "../map-row.js";
+
+function toEntity(row: Record<string, unknown>): LlmConfig {
+  const { api_key_encrypted, ...rest } = row;
+  return mapRow<LlmConfig>({ ...rest, api_key: api_key_encrypted });
+}
 
 export class PostgresLlmConfigStorage implements ILlmConfigStorage {
   constructor(private db: Database) {}
 
   async findById(id: string): Promise<LlmConfig | null> {
     const rows = await this.db.select().from(llmConfigs).where(eq(llmConfigs.id, id));
-    return rows[0] ? mapRow<LlmConfig>(rows[0]) : null;
+    return rows[0] ? toEntity(rows[0]) : null;
   }
 
   async findByScope(scope: "platform" | "project", scopeId?: string): Promise<LlmConfig[]> {
@@ -22,21 +27,27 @@ export class PostgresLlmConfigStorage implements ILlmConfigStorage {
       .select()
       .from(llmConfigs)
       .where(and(...conditions));
-    return mapRows<LlmConfig>(rows);
+    return rows.map(toEntity);
   }
 
   async create(data: CreateInput<LlmConfig>): Promise<LlmConfig> {
-    const rows = await this.db.insert(llmConfigs).values(data).returning();
-    return mapRow<LlmConfig>(rows[0]);
+    const { api_key, ...rest } = data;
+    const rows = await this.db
+      .insert(llmConfigs)
+      .values({ ...rest, api_key_encrypted: api_key })
+      .returning();
+    return toEntity(rows[0]);
   }
 
   async update(id: string, data: UpdateInput<LlmConfig>): Promise<LlmConfig> {
+    const { api_key, ...rest } = data;
+    const dbData = api_key !== undefined ? { ...rest, api_key_encrypted: api_key } : rest;
     const rows = await this.db
       .update(llmConfigs)
-      .set(data)
+      .set(dbData)
       .where(eq(llmConfigs.id, id))
       .returning();
-    return mapRow<LlmConfig>(rows[0]);
+    return toEntity(rows[0]);
   }
 
   async delete(id: string): Promise<void> {

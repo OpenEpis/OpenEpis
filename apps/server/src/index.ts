@@ -1,6 +1,7 @@
 import "dotenv/config";
 import Fastify from "fastify";
 import { PostgresStorageService } from "@openepis/storage-pg";
+import { AiSdkLlmService } from "@openepis/llm";
 import { Container, TOKENS } from "./container.js";
 import { errorHandler } from "./errors.js";
 import { projectRoutes } from "./routes/projects.js";
@@ -13,6 +14,10 @@ import "./types.js";
 
 const container = new Container();
 container.register(TOKENS.StorageService, () => new PostgresStorageService());
+container.register(
+  TOKENS.LlmService,
+  () => new AiSdkLlmService(container.resolve(TOKENS.StorageService).llmConfigs),
+);
 
 const app = Fastify({ logger: true });
 

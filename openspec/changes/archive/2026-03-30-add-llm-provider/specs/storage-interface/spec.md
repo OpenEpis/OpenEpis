@@ -1,13 +1,4 @@
-## ADDED Requirements
-
-### Requirement: Pure interface package with no DB dependencies
-
-`@openepis/storage` SHALL contain only TypeScript interfaces, utility types, and DI tokens.
-
-#### Scenario: Package has no DB runtime dependencies
-
-- **WHEN** `@openepis/storage` is installed
-- **THEN** its dependencies do not include any database-specific package
+## MODIFIED Requirements
 
 ### Requirement: IStorageService interface
 
@@ -24,12 +15,3 @@ The `LlmConfig` entity type SHALL use `api_key: string | null` instead of `api_k
 
 - **WHEN** a consumer imports `LlmConfig` from `@openepis/types`
 - **THEN** the type has `api_key: string | null` (not `api_key_encrypted`)
-
-### Requirement: TSyringe injection token
-
-STORAGE_SERVICE symbol token for DI.
-
-#### Scenario: Injecting storage service
-
-- **WHEN** `@inject(STORAGE_SERVICE)` is used
-- **THEN** TSyringe resolves to the registered implementation

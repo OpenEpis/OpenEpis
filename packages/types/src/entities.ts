@@ -145,6 +145,7 @@ export interface LlmConfig {
   scope_id: string | null;
   provider: "claude" | "openai" | "ollama";
   model: string;
+  api_key: string | null;
   base_url: string | null;
   is_active: boolean;
   created_at: string;
