@@ -103,15 +103,32 @@ export interface ConversationMessage {
 
 export interface GeneratedChanges {
   new_features: Array<{
+    temp_id: string;
     title: string;
+    description: string;
     scenarios: Array<{
       title: string;
       steps: BddStep[];
+      tags?: string[];
     }>;
+    tags?: string[];
   }>;
   modified_features: Array<{
     feature_id: string;
-    changes: string;
+    reason: string;
+    updated_title?: string;
+    updated_description?: string;
+    added_scenarios?: Array<{
+      title: string;
+      steps: BddStep[];
+      tags?: string[];
+    }>;
+    modified_scenarios?: Array<{
+      scenario_id: string;
+      updated_title?: string;
+      updated_steps?: BddStep[];
+    }>;
+    removed_scenario_ids?: string[];
   }>;
 }
 

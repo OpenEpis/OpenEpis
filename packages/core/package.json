@@ -1,5 +1,5 @@
 {
-  "name": "@openepis/llm",
+  "name": "@openepis/core",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -19,12 +19,10 @@
     "format": "prettier --write src"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.0",
-    "@ai-sdk/openai": "^3.0.0",
-    "@openepis/storage": "workspace:*",
-    "@openepis/types": "workspace:*",
-    "ai": "^6.0.0",
-    "zod": "^3.24.0"
+    "@mariozechner/pi-agent-core": "^0.61.0",
+    "@mariozechner/pi-ai": "^0.61.0",
+    "@sinclair/typebox": "^0.34.0",
+    "@openepis/types": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0"
