@@ -147,6 +147,7 @@ export interface LlmConfig {
   model: string;
   api_key: string | null;
   base_url: string | null;
+  provider_config: Record<string, unknown> | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

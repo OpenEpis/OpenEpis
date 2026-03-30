@@ -1,0 +1,1 @@
+ALTER TABLE "llm_configs" ADD COLUMN "provider_config" jsonb;

@@ -1,13 +1,4 @@
-## ADDED Requirements
-
-### Requirement: Dedicated PostgreSQL package
-
-`@openepis/storage-pg` in `packages/storage-pg` with Drizzle ORM.
-
-#### Scenario: Package structure
-
-- **WHEN** `@openepis/storage-pg` is installed
-- **THEN** it depends on drizzle-orm, postgres, dotenv, @openepis/storage, @openepis/types
+## MODIFIED Requirements
 
 ### Requirement: Drizzle schema for all tables
 
@@ -36,12 +27,3 @@ Implements IStorageService with Drizzle queries. `PostgresLlmConfigStorage` SHAL
 
 - **WHEN** `PostgresLlmConfigStorage` is instantiated
 - **THEN** it requires both a `Database` and a `CryptoService` instance
-
-### Requirement: Connection via dotenv
-
-DATABASE_URL from .env, root scripts db:pg:\*.
-
-#### Scenario: Root-level scripts
-
-- **WHEN** pnpm db:pg:generate is run from root
-- **THEN** it delegates to @openepis/storage-pg

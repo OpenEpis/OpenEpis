@@ -1,5 +1,6 @@
 import type { IStorageService } from "@openepis/storage";
 import { createConnection } from "./connection.js";
+import { CryptoService } from "./crypto-service.js";
 import { PostgresUserStorage } from "./repositories/user-storage.js";
 import { PostgresProjectStorage } from "./repositories/project-storage.js";
 import { PostgresProjectMemberStorage } from "./repositories/project-member-storage.js";
@@ -31,6 +32,7 @@ export class PostgresStorageService implements IStorageService {
   constructor() {
     const { db, client } = createConnection();
     this.client = client;
+    const crypto = new CryptoService();
 
     this.users = new PostgresUserStorage(db);
     this.projects = new PostgresProjectStorage(db);
@@ -42,7 +44,7 @@ export class PostgresStorageService implements IStorageService {
     this.prdDocuments = new PostgresPrdDocumentStorage(db);
     this.conversations = new PostgresConversationStorage(db);
     this.asyncTasks = new PostgresAsyncTaskStorage(db);
-    this.llmConfigs = new PostgresLlmConfigStorage(db);
+    this.llmConfigs = new PostgresLlmConfigStorage(db, crypto);
   }
 
   async disconnect(): Promise<void> {

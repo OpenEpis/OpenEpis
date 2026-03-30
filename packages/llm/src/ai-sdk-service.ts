@@ -70,14 +70,15 @@ export class AiSdkLlmService implements ILlmService {
   private createModel(config: LlmConfig) {
     const baseURL = config.base_url ?? undefined;
     const apiKey = config.api_key ?? undefined;
+    const extra = config.provider_config ?? {};
 
     switch (config.provider) {
       case "claude": {
-        const anthropic = createAnthropic({ apiKey, baseURL });
+        const anthropic = createAnthropic({ ...extra, apiKey, baseURL });
         return anthropic(config.model);
       }
       case "openai": {
-        const openai = createOpenAI({ apiKey, baseURL });
+        const openai = createOpenAI({ ...extra, apiKey, baseURL });
         return openai(config.model);
       }
       default:
