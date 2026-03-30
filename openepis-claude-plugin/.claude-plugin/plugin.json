@@ -1,0 +1,13 @@
+{
+  "name": "openepis",
+  "description": "Query BDD features and context from OpenEpis within Claude Code",
+  "version": "0.1.0",
+  "author": {
+    "name": "OpenEpis"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openepis/openepis"
+  },
+  "homepage": "https://github.com/openepis/openepis"
+}
