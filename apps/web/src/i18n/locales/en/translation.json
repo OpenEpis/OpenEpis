@@ -38,6 +38,7 @@
     "project": "Project",
     "features": "Features",
     "repositories": "Repositories",
+    "conversations": "Conversations",
     "viewFeatures": "View Features",
     "addRepository": "Add Repository",
     "noRepositories": "No repositories linked yet.",
@@ -92,6 +93,24 @@
     "generic": "Something went wrong",
     "notFound": "Not found"
   },
+  "conversations": {
+    "title": "Conversations",
+    "new": "New Conversation",
+    "emptyState": "No conversations yet. Start a new conversation to generate BDD features.",
+    "conversation": "Conversation",
+    "messageCount_one": "{{count}} message",
+    "messageCount_other": "{{count}} messages",
+    "thinking": "Thinking...",
+    "inputPlaceholder": "Describe the feature you want to build...",
+    "bddPreview": "BDD Preview",
+    "noChanges": "No pending BDD changes. Send a message to generate features.",
+    "new": "New",
+    "modified": "Modified",
+    "applyAll": "Apply All",
+    "discard": "Discard Changes",
+    "confirmDiscard": "Discard Changes?",
+    "confirmDiscardMsg": "This will discard all proposed BDD changes. This action cannot be undone."
+  },
   "breadcrumb": {
     "projects": "Projects",
     "newProject": "New Project",
@@ -99,6 +118,8 @@
     "features": "Features",
     "feature": "Feature",
     "revisions": "Revisions",
-    "revision": "Revision"
+    "revision": "Revision",
+    "conversations": "Conversations",
+    "conversation": "Conversation"
   }
 }

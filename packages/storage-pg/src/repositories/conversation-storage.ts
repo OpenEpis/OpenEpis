@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import type { Conversation } from "@openepis/types";
 import type { IConversationStorage, CreateInput, UpdateInput } from "@openepis/storage";
 import { conversations } from "../schema/index.js";
@@ -13,8 +13,12 @@ export class PostgresConversationStorage implements IConversationStorage {
     return rows[0] ? mapRow<Conversation>(rows[0]) : null;
   }
 
-  async findByPrd(prdId: string): Promise<Conversation[]> {
-    const rows = await this.db.select().from(conversations).where(eq(conversations.prd_id, prdId));
+  async findByProject(projectId: string): Promise<Conversation[]> {
+    const rows = await this.db
+      .select()
+      .from(conversations)
+      .where(eq(conversations.project_id, projectId))
+      .orderBy(desc(conversations.updated_at));
     return mapRows<Conversation>(rows);
   }
 

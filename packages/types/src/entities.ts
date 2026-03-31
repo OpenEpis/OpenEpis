@@ -99,6 +99,7 @@ export interface ConversationMessage {
   role: "system" | "assistant" | "user";
   content: string;
   timestamp: string;
+  tool_calls?: Array<{ name: string; arguments: Record<string, unknown> }>;
 }
 
 export interface GeneratedChanges {
@@ -134,11 +135,10 @@ export interface GeneratedChanges {
 
 export interface Conversation {
   id: string;
-  prd_id: string;
   project_id: string;
   messages: ConversationMessage[];
   status: "active" | "completed" | "cancelled";
-  generated_changes: GeneratedChanges | null;
+  pending_changes: GeneratedChanges | null;
   created_at: string;
   updated_at: string;
 }

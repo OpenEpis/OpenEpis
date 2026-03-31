@@ -38,6 +38,7 @@
     "project": "项目",
     "features": "特性",
     "repositories": "代码仓库",
+    "conversations": "对话",
     "viewFeatures": "查看特性",
     "addRepository": "添加仓库",
     "noRepositories": "暂无关联的代码仓库。",
@@ -92,6 +93,24 @@
     "generic": "出了点问题",
     "notFound": "未找到"
   },
+  "conversations": {
+    "title": "对话",
+    "new": "新建对话",
+    "emptyState": "暂无对话。开始新对话来生成 BDD 特性。",
+    "conversation": "对话",
+    "messageCount_one": "{{count}} 条消息",
+    "messageCount_other": "{{count}} 条消息",
+    "thinking": "思考中...",
+    "inputPlaceholder": "描述你想要构建的功能...",
+    "bddPreview": "BDD 预览",
+    "noChanges": "暂无待处理的 BDD 变更。发送消息来生成特性。",
+    "new": "新增",
+    "modified": "已修改",
+    "applyAll": "全部应用",
+    "discard": "放弃变更",
+    "confirmDiscard": "放弃变更？",
+    "confirmDiscardMsg": "这将放弃所有提议的 BDD 变更。此操作无法撤销。"
+  },
   "breadcrumb": {
     "projects": "项目",
     "newProject": "新建项目",
@@ -99,6 +118,8 @@
     "features": "特性",
     "feature": "特性",
     "revisions": "修订记录",
-    "revision": "修订版本"
+    "revision": "修订版本",
+    "conversations": "对话",
+    "conversation": "对话"
   }
 }

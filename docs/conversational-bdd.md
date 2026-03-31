@@ -4,6 +4,8 @@
 
 The core feature of OpenEpis: PM starts a conversation with AI to generate and evolve BDD. The conversation is the primary interface — PRD and BDD are both byproducts of the dialogue, not prerequisites.
 
+> **Implementation details** (agent workflow, Pi Agent Core integration, event flow) are in [core-agent-architecture.md](./core-agent-architecture.md). This document focuses on **product behavior and data contracts**.
+
 ## Design Principles
 
 - **Chat-first**: conversation drives everything. No mandatory PRD-before-BDD flow.
@@ -73,62 +75,18 @@ Key behaviors:
 - PM can continue chatting after BDD appears — further turns can add/modify BDD.
 - PM applies changes when satisfied, not per-turn.
 
-## Streaming & Tool Calling
+## Streaming Behavior
 
-AI output is streamed via SSE. BDD changes are delivered through Vercel AI SDK's tool calling mechanism.
+AI responses are streamed to the client via SSE. The client receives three types of events:
 
-```
-┌──────────────────────────────────────────────────┐
-│  AI's response stream                             │
-│                                                   │
-│  Text: "明白了，登录用户最多收藏 100 个商品，      │
-│        未登录提示登录。我已经生成了 BDD。"         │
-│                                                   │
-│  Tool Call: update_bdd({                          │
-│    new_features: [{                               │
-│      title: "商品收藏",                            │
-│      scenarios: [...]                             │
-│    }],                                            │
-│    modified_features: [{                          │
-│      feature_id: "xxx",                           │
-│      reason: "添加收藏入口",                       │
-│      added_scenarios: [...]                       │
-│    }]                                             │
-│  })                                               │
-└──────────────────────────────────────────────────┘
-         │                     │
-         ▼                     ▼
-   Left panel:            Right panel:
-   text streams in        BDD preview updates
-```
+| SSE Event    | Payload                        | Frontend Action                         |
+| ------------ | ------------------------------ | --------------------------------------- |
+| `text-delta` | `{ delta: string }`            | Append to chat (left panel, typewriter) |
+| `bdd-change` | Structured BDD changes (below) | Merge into right panel state            |
+| `done`       | `{ message_id: string }`       | Finalize turn                           |
 
-### Stream protocol
-
-```
-Client                             Server
-
-  POST /api/conversations/:id/messages
-  { content, attachments? }
-  ──────────────────────────────►
-                                   Assemble context (3-layer)
-                                   Call LLM with streamText + tools
-  SSE: text delta
-  ◄──────────────────────────────
-  SSE: text delta
-  ◄──────────────────────────────
-  SSE: tool_call (update_bdd)
-  ◄──────────────────────────────   BDD changes as structured data
-  SSE: text delta (after tool)
-  ◄──────────────────────────────
-  SSE: [DONE]
-  ◄──────────────────────────────
-```
-
-Frontend behavior:
-
-- Text deltas → append to chat (left panel, typewriter effect).
-- `update_bdd` tool call → parse changes, merge into right panel state.
-- Multiple tool calls per response are allowed (AI might update BDD, then continue talking, then update again).
+- Multiple `bdd-change` events per response are possible (AI might update BDD, continue talking, then update again).
+- Text and BDD changes can interleave — the AI generates text and proposes BDD within the same response.
 
 ## AI Tool: `update_bdd`
 
@@ -320,18 +278,9 @@ Content-Type: application/json
 Response: text/event-stream (SSE)
 ← data: {"type":"text-delta","delta":"有几个"}
 ← data: {"type":"text-delta","delta":"问题..."}
-← data: {"type":"tool-call","name":"update_bdd","arguments":{...}}
+← data: {"type":"bdd-change","changes":{...}}
 ← data: {"type":"done","message_id":"..."}
 ```
-
-Server-side:
-
-1. Append user message to conversation.
-2. Assemble context (3-layer).
-3. Call `streamText` with tools (`update_bdd`, `get_feature_detail`).
-4. Stream text deltas and tool calls to client.
-5. On `update_bdd` tool call: merge changes into `conversation.pending_changes`.
-6. Append complete assistant message (with tool_calls) to conversation.
 
 ### Apply changes
 
@@ -369,42 +318,3 @@ Upload flow:
 3. Server reads file content when assembling LLM context (text files are inlined, images sent as vision input).
 
 For MVP, store uploads on local filesystem or a simple blob store. File content extraction (PDF, docx, etc.) can be added incrementally.
-
-## Implementation Order
-
-```
-Phase 1: Data model + API skeleton
-  - Update types (ConversationMessage, GeneratedChanges, Conversation)
-  - Update DB schema (conversations.prd_id nullable, pending_changes column)
-  - Add conversation CRUD routes
-  - Run migration
-
-Phase 2: BDD generation service
-  - Context assembly (3-layer loading)
-  - System prompt design
-  - Tool definitions (update_bdd, get_feature_detail)
-  - LLM orchestration with streamText
-  - Change accumulation logic
-
-Phase 3: Streaming endpoint
-  - POST /api/conversations/:id/messages with SSE response
-  - Message persistence (user + assistant)
-  - Tool call execution and pending_changes update
-
-Phase 4: Apply/discard
-  - POST /api/conversations/:id/apply
-  - POST /api/conversations/:id/discard
-  - Feature + Scenario creation/modification with revisions
-
-Phase 5: Web UI
-  - Two-panel layout (chat + BDD preview)
-  - Streaming message rendering
-  - BDD preview panel with change highlighting
-  - File upload
-  - Apply/discard controls
-
-Phase 6: Polish
-  - File content extraction (PDF, docx)
-  - Conversation history / resume
-  - Error handling and edge cases
-```

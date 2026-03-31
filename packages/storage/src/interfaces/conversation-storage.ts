@@ -3,7 +3,7 @@ import type { CreateInput, UpdateInput } from "../types.js";
 
 export interface IConversationStorage {
   findById(id: string): Promise<Conversation | null>;
-  findByPrd(prdId: string): Promise<Conversation[]>;
+  findByProject(projectId: string): Promise<Conversation[]>;
   create(data: CreateInput<Conversation>): Promise<Conversation>;
   update(id: string, data: UpdateInput<Conversation>): Promise<Conversation>;
   delete(id: string): Promise<void>;

@@ -63,6 +63,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@fastify/sse':
+        specifier: ^0.4.0
+        version: 0.4.0(fastify@5.8.4)
       '@openepis/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -1000,6 +1003,12 @@ packages:
 
   '@fastify/proxy-addr@5.1.0':
     resolution: {integrity: sha512-INS+6gh91cLUjB+PVHfu1UqcB76Sqtpyp7bnL+FYojhjygvOPA9ctiD/JDKsyD9Xgu4hUhCSJBPig/w7duNajw==}
+
+  '@fastify/sse@0.4.0':
+    resolution: {integrity: sha512-bBV96iT2kHEw6h3i8IMkZGaqA7Gk81ugUzTNctXuE6N2BEC/qBnUuzlD/O17V43OkJP73h0/kf3Bp/asXlSuFA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      fastify: ^5.x
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -4665,6 +4674,11 @@ snapshots:
     dependencies:
       '@fastify/forwarded': 3.0.1
       ipaddr.js: 2.3.0
+
+  '@fastify/sse@0.4.0(fastify@5.8.4)':
+    dependencies:
+      fastify: 5.8.4
+      fastify-plugin: 5.1.0
 
   '@floating-ui/core@1.7.5':
     dependencies:

@@ -4,6 +4,7 @@ import {
   FolderOpen,
   GitBranch,
   FileText,
+  MessageSquare,
   Plus,
   Trash2,
 } from "lucide-react";
@@ -135,9 +136,15 @@ export function ProjectDetailPage() {
         </Card>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
         <Button asChild variant="outline">
           <Link to={`/projects/${projectId}/features`}>{t("projectDetail.viewFeatures")}</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link to={`/projects/${projectId}/conversations`}>
+            <MessageSquare className="mr-2 h-4 w-4" />
+            {t("projectDetail.conversations")}
+          </Link>
         </Button>
       </div>
 

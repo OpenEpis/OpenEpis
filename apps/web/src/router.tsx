@@ -8,6 +8,8 @@ import { FeatureListPage } from "@/pages/feature-list";
 import { FeatureDetailPage } from "@/pages/feature-detail";
 import { FeatureRevisionsPage } from "@/pages/feature-revisions";
 import { RevisionDetailPage } from "@/pages/revision-detail";
+import { ConversationListPage } from "@/pages/conversation-list";
+import { ConversationDetailPage } from "@/pages/conversation-detail";
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +72,21 @@ export const router = createBrowserRouter([
                         ],
                       },
                     ],
+                  },
+                ],
+              },
+              {
+                path: "conversations",
+                handle: { breadcrumb: "breadcrumb.conversations" },
+                children: [
+                  {
+                    index: true,
+                    element: <ConversationListPage />,
+                  },
+                  {
+                    path: ":id",
+                    element: <ConversationDetailPage />,
+                    handle: { breadcrumb: "breadcrumb.conversation" },
                   },
                 ],
               },
