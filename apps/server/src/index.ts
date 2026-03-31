@@ -10,6 +10,7 @@ import { featureRoutes } from "./routes/features.js";
 import { taskRoutes } from "./routes/tasks.js";
 import { contextRoutes } from "./routes/context.js";
 import { conversationRoutes } from "./routes/conversations.js";
+import { llmConfigRoutes } from "./routes/llm-configs.js";
 import { currentUserPlugin } from "./plugins/current-user.js";
 import "./types.js";
 
@@ -34,6 +35,7 @@ app.register(featureRoutes, { container });
 app.register(taskRoutes, { container });
 app.register(contextRoutes, { container });
 app.register(conversationRoutes, { container });
+app.register(llmConfigRoutes, { container });
 
 const start = async () => {
   try {
