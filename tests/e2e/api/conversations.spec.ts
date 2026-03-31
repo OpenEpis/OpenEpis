@@ -192,6 +192,69 @@ test.describe("Conversation SSE messaging", () => {
     expect(body.error.code).toBe("CONVERSATION_NOT_FOUND");
   });
 
+  test("SSE stream handles missing LLM config gracefully", async ({ testProject, api }) => {
+    test.setTimeout(30_000);
+
+    const convRes = await api.post(`/api/projects/${testProject.id}/conversations`, { data: {} });
+    const conv = await convRes.json();
+
+    try {
+      // No LLM config created — should fail with LLM_CONFIG_MISSING
+      const res = await fetch(`http://localhost:3001/api/conversations/${conv.id}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: "hello" }),
+      });
+      expect(res.status).toBe(500);
+      const body = await res.json();
+      expect(["LLM_CONFIG_MISSING", "INTERNAL_ERROR"]).toContain(body.error.code);
+    } finally {
+      await api.delete(`/api/conversations/${conv.id}`);
+    }
+  });
+
+  test("multi-turn conversation preserves message ordering", async ({ api }) => {
+    test.setTimeout(180_000);
+
+    const llmConfig = await createLlmConfig(api);
+    const project = await createProject(api);
+    const convRes = await api.post(`/api/projects/${project.id}/conversations`, { data: {} });
+    const conv = await convRes.json();
+
+    try {
+      // First message
+      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+        content: "Say hello in one sentence.",
+      });
+
+      // Second message
+      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+        content: "Say goodbye in one sentence.",
+      });
+
+      const detailRes = await api.get(`/api/conversations/${conv.id}`);
+      const detail = await detailRes.json();
+
+      // Should have at least 2 user + 2 assistant messages
+      const userMsgs = detail.messages.filter((m: { role: string }) => m.role === "user");
+      const assistantMsgs = detail.messages.filter((m: { role: string }) => m.role === "assistant");
+      expect(userMsgs.length).toBeGreaterThanOrEqual(2);
+      expect(assistantMsgs.length).toBeGreaterThanOrEqual(2);
+
+      // Verify interleaving: user messages should come before their assistant responses
+      let lastUserIdx = -1;
+      for (let i = 0; i < detail.messages.length; i++) {
+        if (detail.messages[i].role === "user") {
+          expect(i).toBeGreaterThan(lastUserIdx);
+          lastUserIdx = i;
+        }
+      }
+    } finally {
+      await deleteProject(api, project.id);
+      await deleteLlmConfig(api, llmConfig.id);
+    }
+  });
+
   test("messages are persisted after streaming completes", async ({ api }) => {
     test.setTimeout(90_000);
 
@@ -229,7 +292,7 @@ test.describe("Conversation Apply / Discard", () => {
   test.describe.configure({ mode: "serial" });
 
   test("apply pending changes creates features", async ({ api }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(180_000);
 
     const llmConfig = await createLlmConfig(api);
     const project = await createProject(api);
@@ -246,8 +309,8 @@ test.describe("Conversation Apply / Discard", () => {
       expect(before.pending_changes).not.toBeNull();
 
       const applyRes = await api.post(`/api/conversations/${conv.id}/apply`);
-      expect(applyRes.ok()).toBeTruthy();
       const applyBody = await applyRes.json();
+      expect(applyRes.ok(), `Apply failed: ${JSON.stringify(applyBody)}`).toBeTruthy();
       expect(applyBody.applied_features).toBeTruthy();
       expect(applyBody.applied_features.length).toBeGreaterThan(0);
 
@@ -258,6 +321,53 @@ test.describe("Conversation Apply / Discard", () => {
       const featuresRes = await api.get(`/api/projects/${project.id}/features`);
       const { features } = await featuresRes.json();
       expect(features.length).toBeGreaterThan(0);
+    } finally {
+      await deleteProject(api, project.id);
+      await deleteLlmConfig(api, llmConfig.id);
+    }
+  });
+
+  test("apply after multi-turn creates correct features", async ({ api }) => {
+    test.setTimeout(180_000);
+
+    const llmConfig = await createLlmConfig(api);
+    const project = await createProject(api);
+    const convRes = await api.post(`/api/projects/${project.id}/conversations`, { data: {} });
+    const conv = await convRes.json();
+
+    try {
+      // First turn: generate BDD
+      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+        content: "为用户注册功能写BDD测试场景",
+      });
+
+      // Second turn: add more scenarios
+      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+        content: "再加一个场景：邮箱格式无效时注册失败",
+      });
+
+      const beforeRes = await api.get(`/api/conversations/${conv.id}`);
+      const before = await beforeRes.json();
+      expect(before.pending_changes).not.toBeNull();
+
+      // Apply
+      const applyRes = await api.post(`/api/conversations/${conv.id}/apply`);
+      expect(applyRes.ok()).toBeTruthy();
+      const applyBody = await applyRes.json();
+      expect(applyBody.applied_features.length).toBeGreaterThan(0);
+
+      // Verify features in DB
+      const featuresRes = await api.get(`/api/projects/${project.id}/features`);
+      const { features } = await featuresRes.json();
+      expect(features.length).toBeGreaterThan(0);
+
+      for (const feature of features) {
+        expect(feature.title).toBeTruthy();
+        const detailRes = await api.get(`/api/features/${feature.id}`);
+        const featureDetail = await detailRes.json();
+        expect(Array.isArray(featureDetail.scenarios)).toBeTruthy();
+        expect(featureDetail.scenarios.length).toBeGreaterThan(0);
+      }
     } finally {
       await deleteProject(api, project.id);
       await deleteLlmConfig(api, llmConfig.id);

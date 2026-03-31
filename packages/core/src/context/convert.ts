@@ -68,15 +68,28 @@ export function fromPiMessages(messages: AgentMessage[]): ConversationMessage[] 
         timestamp: new Date(msg.timestamp).toISOString(),
       });
     } else if (msg.role === "assistant") {
-      const textParts = (msg.content as Array<{ type: string; text?: string }>)
-        .filter((c) => c.type === "text")
-        .map((c) => c.text ?? "");
-      if (textParts.length > 0) {
-        result.push({
+      const contentBlocks = msg.content as Array<{
+        type: string;
+        text?: string;
+        name?: string;
+        arguments?: Record<string, unknown>;
+      }>;
+      const textParts = contentBlocks.filter((c) => c.type === "text").map((c) => c.text ?? "");
+      const toolCallBlocks = contentBlocks.filter((c) => c.type === "toolCall");
+
+      if (textParts.length > 0 || toolCallBlocks.length > 0) {
+        const message: ConversationMessage = {
           role: "assistant",
           content: textParts.join(""),
           timestamp: new Date(msg.timestamp).toISOString(),
-        });
+        };
+        if (toolCallBlocks.length > 0) {
+          message.tool_calls = toolCallBlocks.map((tc) => ({
+            name: tc.name ?? "",
+            arguments: (tc.arguments as Record<string, unknown>) ?? {},
+          }));
+        }
+        result.push(message);
       }
     }
     // Skip toolResult messages — they are internal to the agent loop

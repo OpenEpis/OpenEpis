@@ -38,6 +38,11 @@ export const UpdateBddParams = Type.Object({
         description: Type.String({ description: "Feature description" }),
         scenarios: Type.Array(NewScenarioSchema, { description: "Feature scenarios" }),
         tags: Type.Optional(Type.Array(Type.String(), { description: "Feature tags" })),
+        temp_id: Type.Optional(
+          Type.String({
+            description: "Temporary ID for client-side tracking (auto-generated if omitted)",
+          }),
+        ),
       }),
       { description: "New Features to create" },
     ),

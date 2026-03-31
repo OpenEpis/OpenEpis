@@ -13,13 +13,19 @@ export function mergeChanges(
   existing: GeneratedChanges | null,
   incoming: GeneratedChanges,
 ): GeneratedChanges {
+  // Normalize: ensure arrays exist (UpdateBddParams has optional fields)
+  const normalizedIncoming: GeneratedChanges = {
+    new_features: incoming.new_features ?? [],
+    modified_features: incoming.modified_features ?? [],
+  };
+
   if (!existing) {
-    return incoming;
+    return normalizedIncoming;
   }
 
   // Merge new_features: same title replaces, new title appends
   const mergedNewFeatures = [...existing.new_features];
-  for (const incomingFeature of incoming.new_features) {
+  for (const incomingFeature of normalizedIncoming.new_features) {
     const existingIndex = mergedNewFeatures.findIndex((f) => f.title === incomingFeature.title);
     if (existingIndex >= 0) {
       mergedNewFeatures[existingIndex] = incomingFeature;
@@ -30,7 +36,7 @@ export function mergeChanges(
 
   // Merge modified_features: same feature_id merges, new feature_id appends
   const mergedModifiedFeatures = [...existing.modified_features];
-  for (const incomingMod of incoming.modified_features) {
+  for (const incomingMod of normalizedIncoming.modified_features) {
     const existingIndex = mergedModifiedFeatures.findIndex(
       (f) => f.feature_id === incomingMod.feature_id,
     );

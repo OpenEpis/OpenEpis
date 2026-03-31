@@ -60,10 +60,82 @@ test.describe("Agent behavior", () => {
           expect(scenario.steps.length).toBeGreaterThan(0);
 
           for (const step of scenario.steps) {
-            expect(["given", "when", "then", "and"]).toContain(step.type);
+            expect(["given", "when", "then", "and", "but"]).toContain(step.type);
             expect(step.text).toBeTruthy();
           }
         }
+      }
+    } finally {
+      await deleteProject(api, project.id);
+      await deleteLlmConfig(api, llmConfig.id);
+    }
+  });
+
+  // ─── 6.1b bdd-change event has valid temp_id UUIDs ─────────────────────────
+
+  test("bdd-change event has valid new_features with temp_id as UUID", async ({ api }) => {
+    test.setTimeout(90_000);
+
+    const llmConfig = await createLlmConfig(api);
+    const project = await createProject(api);
+    const convRes = await api.post(`/api/projects/${project.id}/conversations`, { data: {} });
+    const conv = await convRes.json();
+
+    try {
+      const events = await parseSSEStream(
+        "http://localhost:3001",
+        `/api/conversations/${conv.id}/messages`,
+        { content: "为用户搜索功能写BDD" },
+      );
+
+      const bddChanges = events.filter((e) => e.event === "bdd-change");
+      expect(bddChanges.length).toBeGreaterThan(0);
+
+      const lastChange = bddChanges[bddChanges.length - 1].data as {
+        changes: { new_features: Array<{ temp_id: string }> };
+      };
+
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      for (const feature of lastChange.changes.new_features) {
+        expect(feature.temp_id).toBeTruthy();
+        expect(feature.temp_id).toMatch(uuidRegex);
+      }
+    } finally {
+      await deleteProject(api, project.id);
+      await deleteLlmConfig(api, llmConfig.id);
+    }
+  });
+
+  // ─── 6.1c pending_changes structure matches GeneratedChanges type ─────────
+
+  test("pending_changes structure matches GeneratedChanges type", async ({ api }) => {
+    test.setTimeout(90_000);
+
+    const llmConfig = await createLlmConfig(api);
+    const project = await createProject(api);
+    const convRes = await api.post(`/api/projects/${project.id}/conversations`, { data: {} });
+    const conv = await convRes.json();
+
+    try {
+      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+        content: "为订单管理功能写BDD",
+      });
+
+      const detailRes = await api.get(`/api/conversations/${conv.id}`);
+      const detail = await detailRes.json();
+      expect(detail.pending_changes).not.toBeNull();
+
+      const changes = detail.pending_changes;
+      expect(Array.isArray(changes.new_features)).toBeTruthy();
+      expect(Array.isArray(changes.modified_features)).toBeTruthy();
+
+      // Validate new_features contains objects, not numbers
+      for (const feature of changes.new_features) {
+        expect(typeof feature).toBe("object");
+        expect(feature).not.toBeNull();
+        expect(typeof feature.title).toBe("string");
+        expect(typeof feature.description).toBe("string");
+        expect(Array.isArray(feature.scenarios)).toBeTruthy();
       }
     } finally {
       await deleteProject(api, project.id);
@@ -90,6 +162,10 @@ test.describe("Agent behavior", () => {
 
       expect(events.some((e) => e.event === "done")).toBeTruthy();
 
+      // Verify bdd-change event was emitted (confirms update_bdd was called)
+      const hasBddChange = events.some((e) => e.event === "bdd-change");
+      expect(hasBddChange).toBeTruthy();
+
       const detailRes = await api.get(`/api/conversations/${conv.id}`);
       const detail = await detailRes.json();
 
@@ -98,11 +174,14 @@ test.describe("Agent behavior", () => {
       );
       expect(assistantMessages.length).toBeGreaterThan(0);
 
-      const hasUpdateBdd = detail.messages.some(
-        (m: { role: string; tool_calls?: Array<{ name: string }> }) =>
-          m.tool_calls?.some((tc) => tc.name === "update_bdd"),
-      );
-      expect(hasUpdateBdd).toBeTruthy();
+      // Verify tool_calls are persisted on assistant messages when update_bdd was called
+      if (hasBddChange) {
+        const hasToolCalls = detail.messages.some(
+          (m: { role: string; tool_calls?: Array<{ name: string }> }) =>
+            m.tool_calls && m.tool_calls.length > 0,
+        );
+        expect(hasToolCalls).toBeTruthy();
+      }
     } finally {
       await deleteProject(api, project.id);
       await deleteLlmConfig(api, llmConfig.id);

@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import type { Static } from "@sinclair/typebox";
 import { UpdateBddParams } from "./schemas.js";
@@ -12,6 +13,15 @@ export function createUpdateBddTool(): AgentTool<typeof UpdateBddParams> {
     execute: async (_toolCallId: string, params: Static<typeof UpdateBddParams>) => {
       const newCount = params.new_features?.length ?? 0;
       const modifiedCount = params.modified_features?.length ?? 0;
+
+      // Ensure each new feature has a temp_id for client-side tracking
+      if (params.new_features) {
+        for (const feature of params.new_features) {
+          if (!feature.temp_id) {
+            feature.temp_id = crypto.randomUUID();
+          }
+        }
+      }
 
       const parts: string[] = [];
       if (newCount > 0) {

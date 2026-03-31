@@ -45,7 +45,7 @@ export function createBddAgent(options: BddAgentOptions): Agent {
   let model: AnyModel;
   if (modelConfig.baseUrl) {
     model = {
-      id: `${modelConfig.provider}/${modelConfig.modelId}`,
+      id: modelConfig.modelId,
       name: modelConfig.modelId,
       api: "openai-completions" as Api,
       provider: modelConfig.provider,

@@ -132,22 +132,16 @@ export async function conversationRoutes(
         providerConfig: llmConfig.provider_config ?? undefined,
       };
 
-      // Add user message to conversation messages
-      const userMessage = {
-        role: "user" as const,
-        content,
-        timestamp: new Date().toISOString(),
-      };
-      const messages = [...conv.messages, userMessage];
-
       // Create context service and agent
+      // NOTE: Don't add the user message to initial messages here —
+      // agent.prompt(content) will add it automatically.
       const contextService = new BddContextServiceImpl(storage);
       const agent = createBddAgent({
         projectId,
         projectName: project.name,
         featureIndex,
         relatedFeatures: [],
-        messages,
+        messages: conv.messages,
         pendingChanges: conv.pending_changes,
         model: modelConfig,
         contextService,
@@ -200,7 +194,7 @@ export async function conversationRoutes(
                 if (!event.isError && event.result?.details) {
                   pendingChanges = mergeChanges(
                     pendingChanges,
-                    event.result.details as GeneratedChanges,
+                    event.result.details.changes as GeneratedChanges,
                   );
                   yield {
                     event: "bdd-change",
@@ -208,8 +202,10 @@ export async function conversationRoutes(
                   };
                 }
               } else if (event.type === "agent_end") {
-                // Persist messages and pending changes
-                const updatedMessages = fromPiMessages(event.messages);
+                // agent_end.messages only contains the current turn's messages,
+                // not the full conversation history. Append them to existing messages.
+                const newMessages = fromPiMessages(event.messages);
+                const updatedMessages = [...conv.messages, ...newMessages];
                 await storage.conversations.update(conversationId, {
                   messages: updatedMessages,
                   pending_changes: pendingChanges,
