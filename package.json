@@ -16,6 +16,7 @@
     "db:pg:push": "turbo db:push --filter=@openepis/storage-pg",
     "db:pg:studio": "turbo db:studio --filter=@openepis/storage-pg",
     "test:e2e": "playwright test",
+    "eval": "playwright test --project=eval",
     "prepare": "husky"
   },
   "devDependencies": {

@@ -32,6 +32,13 @@ export default defineConfig({
         baseURL: "http://localhost:3000",
       },
     },
+    {
+      name: "eval",
+      testDir: "./tests/e2e/eval",
+      use: {
+        baseURL: "http://localhost:3001",
+      },
+    },
   ],
   webServer: [
     {
