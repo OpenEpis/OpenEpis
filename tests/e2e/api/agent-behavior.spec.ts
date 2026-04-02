@@ -145,7 +145,7 @@ test.describe("Agent behavior", () => {
 
   // ─── 6.2 tool_calls persisted in messages ─────────────────────────────────
 
-  test("conversation messages contain tool_calls metadata after agent run", async ({ api }) => {
+  test("conversation messages contain tool_use content blocks after agent run", async ({ api }) => {
     test.setTimeout(90_000);
 
     const llmConfig = await createLlmConfig(api);
@@ -174,13 +174,14 @@ test.describe("Agent behavior", () => {
       );
       expect(assistantMessages.length).toBeGreaterThan(0);
 
-      // Verify tool_calls are persisted on assistant messages when update_bdd was called
+      // Verify tool_use content blocks are persisted on assistant messages
       if (hasBddChange) {
-        const hasToolCalls = detail.messages.some(
-          (m: { role: string; tool_calls?: Array<{ name: string }> }) =>
-            m.tool_calls && m.tool_calls.length > 0,
+        const hasToolUse = detail.messages.some(
+          (m: { role: string; content: Array<{ type: string; name?: string }> }) =>
+            m.role === "assistant" &&
+            m.content.some((b) => b.type === "tool_use" && b.name === "update_bdd"),
         );
-        expect(hasToolCalls).toBeTruthy();
+        expect(hasToolUse).toBeTruthy();
       }
     } finally {
       await deleteProject(api, project.id);
@@ -229,9 +230,12 @@ test.describe("Agent behavior", () => {
       const detail = await detailRes.json();
 
       const hasContextQuery = detail.messages.some(
-        (m: { role: string; tool_calls?: Array<{ name: string }> }) =>
-          m.tool_calls?.some(
-            (tc) => tc.name === "search_features" || tc.name === "get_feature_detail",
+        (m: { role: string; content: Array<{ type: string; name?: string }> }) =>
+          m.role === "assistant" &&
+          m.content.some(
+            (b) =>
+              b.type === "tool_use" &&
+              (b.name === "search_features" || b.name === "get_feature_detail"),
           ),
       );
       expect(hasContextQuery).toBeTruthy();
@@ -274,6 +278,11 @@ test.describe("Agent behavior", () => {
       );
       expect(userMessages.length).toBe(2);
       expect(assistantMessages.length).toBeGreaterThanOrEqual(2);
+
+      // Verify all messages have ContentBlock[] content
+      for (const msg of second.messages) {
+        expect(Array.isArray(msg.content)).toBeTruthy();
+      }
     } finally {
       await deleteProject(api, project.id);
       await deleteLlmConfig(api, llmConfig.id);

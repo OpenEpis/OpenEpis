@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { Conversation, GeneratedChanges } from "@openepis/types";
+import type { ContentBlock, Conversation, GeneratedChanges } from "@openepis/types";
 import type { SSEMessage } from "@fastify/sse";
 import {
   createBddAgent,
@@ -82,7 +82,7 @@ export async function conversationRoutes(
   });
 
   // POST /api/conversations/:id/messages — streaming message endpoint (SSE)
-  app.post<{ Params: { id: string }; Body: { content: string } }>(
+  app.post<{ Params: { id: string }; Body: { content: string | ContentBlock[] } }>(
     "/api/conversations/:id/messages",
     { sse: true },
     async (request, reply) => {
@@ -91,11 +91,21 @@ export async function conversationRoutes(
       if (conv.status !== "active")
         throw new AppError(400, "CONVERSATION_NOT_ACTIVE", "Conversation is not active");
 
-      const { content } = request.body;
-      if (!content) throw new AppError(400, "VALIDATION_ERROR", "content is required");
+      const { content: rawContent } = request.body;
+      if (!rawContent) throw new AppError(400, "VALIDATION_ERROR", "content is required");
+
+      // Normalize: wrap string as ContentBlock[], pass arrays through
+      const content: string =
+        typeof rawContent === "string"
+          ? rawContent
+          : rawContent
+              .filter((b): b is Extract<ContentBlock, { type: "text" }> => b.type === "text")
+              .map((b) => b.text)
+              .join("");
 
       const conversationId = conv.id;
       const projectId = conv.project_id;
+      const existingMessages = conv.messages;
 
       const project = await storage.projects.findById(projectId);
       if (!project) throw new AppError(500, "INTERNAL_ERROR", "Project not found");
@@ -141,7 +151,7 @@ export async function conversationRoutes(
         projectName: project.name,
         featureIndex,
         relatedFeatures: [],
-        messages: conv.messages,
+        messages: existingMessages,
         pendingChanges: conv.pending_changes,
         model: modelConfig,
         contextService,
@@ -205,7 +215,7 @@ export async function conversationRoutes(
                 // agent_end.messages only contains the current turn's messages,
                 // not the full conversation history. Append them to existing messages.
                 const newMessages = fromPiMessages(event.messages);
-                const updatedMessages = [...conv.messages, ...newMessages];
+                const updatedMessages = [...existingMessages, ...newMessages];
                 await storage.conversations.update(conversationId, {
                   messages: updatedMessages,
                   pending_changes: pendingChanges,

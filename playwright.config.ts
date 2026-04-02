@@ -1,9 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 import { config } from "dotenv";
 
-config({ path: ".env.test" });
-
-const testDatabaseUrl = process.env.DATABASE_URL;
+// Load .env.test so test-specific variables are available to both
+// Playwright and any server processes it spawns.
+const testEnv = config({ path: ".env.test" });
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -44,16 +44,16 @@ export default defineConfig({
     {
       command: "pnpm dev:server",
       url: "http://localhost:3001/api/health",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 30000,
       env: {
-        ...(testDatabaseUrl ? { DATABASE_URL: testDatabaseUrl } : {}),
+        ...testEnv.parsed,
       },
     },
     {
       command: "pnpm dev:web",
       url: "http://localhost:3000",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 30000,
     },
   ],

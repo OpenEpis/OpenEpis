@@ -2,7 +2,7 @@
 
 ### Requirement: Conversation API CRUD e2e tests
 
-The test suite SHALL verify conversation creation, listing, detail retrieval, and deletion through the REST API.
+The test suite SHALL verify conversation creation, listing, detail retrieval, and deletion through the REST API. Message assertions SHALL use the `ContentBlock[]` shape for the `content` field.
 
 #### Scenario: Create conversation under a project
 
@@ -27,7 +27,7 @@ The test suite SHALL verify conversation creation, listing, detail retrieval, an
 #### Scenario: Get conversation detail
 
 - **WHEN** `GET /api/conversations/:id` is called for an existing conversation
-- **THEN** the response SHALL include the full conversation with `messages` array and `pending_changes`
+- **THEN** the response SHALL include the full conversation with `messages` array where each message has `content` as a `ContentBlock[]` array (not a string) and `pending_changes` object
 
 #### Scenario: Get non-existent conversation
 
@@ -43,7 +43,7 @@ The test suite SHALL verify conversation creation, listing, detail retrieval, an
 
 ### Requirement: SSE message streaming e2e tests
 
-The test suite SHALL verify that sending a message to a conversation returns a valid SSE stream with the expected event types. These tests require a valid LLM configuration.
+The test suite SHALL verify that sending a message to a conversation returns a valid SSE stream with the expected event types. Message persistence assertions SHALL verify `content` is `ContentBlock[]`. These tests require a valid LLM configuration.
 
 #### Scenario: Send message and receive SSE stream
 
@@ -68,10 +68,20 @@ The test suite SHALL verify that sending a message to a conversation returns a v
 - **WHEN** a `POST /api/conversations/:id/messages` request is sent with `{ "content": "" }` or missing content
 - **THEN** the response SHALL be 400 with error code `VALIDATION_ERROR`
 
-#### Scenario: Conversation messages are persisted after streaming completes
+#### Scenario: Messages are persisted with ContentBlock content after streaming completes
 
 - **WHEN** a message is sent and the SSE stream completes with a `done` event
-- **THEN** `GET /api/conversations/:id` SHALL show updated `messages` array containing both the user message and assistant response
+- **THEN** `GET /api/conversations/:id` SHALL show updated `messages` array where user messages have `content` as an array containing `{ type: "text", text: "..." }` and assistant messages have `content` as an array of content blocks
+
+#### Scenario: Persisted user message content is ContentBlock array
+
+- **WHEN** a message `{ "content": "Say hello" }` is sent and the stream completes
+- **THEN** the persisted user message SHALL have `content: [{ type: "text", text: "Say hello" }]` (not `content: "Say hello"`)
+
+#### Scenario: Multi-turn conversation preserves ContentBlock message ordering
+
+- **WHEN** two messages are sent in sequence and both streams complete
+- **THEN** `GET /api/conversations/:id` SHALL return messages where each message's `content` is a `ContentBlock[]` array, user messages contain `{ type: "text" }` blocks, and assistant messages may contain `text`, `tool_use`, and `thinking` blocks
 
 ### Requirement: Apply and discard pending changes e2e tests
 

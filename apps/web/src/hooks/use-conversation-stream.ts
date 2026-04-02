@@ -39,7 +39,7 @@ export function useConversationStream({
 
       const userMessage: ConversationMessage = {
         role: "user",
-        content,
+        content: [{ type: "text", text: content }],
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, userMessage]);
@@ -96,7 +96,7 @@ export function useConversationStream({
                   } else if (eventType === "done") {
                     const assistantMessage: ConversationMessage = {
                       role: "assistant",
-                      content: accumulatedText,
+                      content: [{ type: "text", text: accumulatedText }],
                       timestamp: new Date().toISOString(),
                     };
                     setMessages((prev) => [...prev, assistantMessage]);
@@ -120,7 +120,7 @@ export function useConversationStream({
             if (accumulatedText) {
               const assistantMessage: ConversationMessage = {
                 role: "assistant",
-                content: accumulatedText,
+                content: [{ type: "text", text: accumulatedText }],
                 timestamp: new Date().toISOString(),
               };
               setMessages((prev) => [...prev, assistantMessage]);
@@ -137,7 +137,7 @@ export function useConversationStream({
           if (accumulatedText) {
             const assistantMessage: ConversationMessage = {
               role: "assistant",
-              content: accumulatedText,
+              content: [{ type: "text", text: accumulatedText }],
               timestamp: new Date().toISOString(),
             };
             setMessages((prev) => [...prev, assistantMessage]);

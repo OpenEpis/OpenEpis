@@ -95,11 +95,17 @@ export interface PrdDocument {
   updated_at: string;
 }
 
+export type ContentBlock =
+  | { type: "text"; text: string }
+  | { type: "image"; data: string; mimeType: string }
+  | { type: "tool_use"; id: string; name: string; arguments: Record<string, unknown> }
+  | { type: "tool_result"; tool_use_id: string; content: string; is_error?: boolean }
+  | { type: "thinking"; thinking: string };
+
 export interface ConversationMessage {
-  role: "system" | "assistant" | "user";
-  content: string;
+  role: "system" | "assistant" | "user" | "tool_result";
+  content: ContentBlock[];
   timestamp: string;
-  tool_calls?: Array<{ name: string; arguments: Record<string, unknown> }>;
 }
 
 export interface GeneratedChanges {

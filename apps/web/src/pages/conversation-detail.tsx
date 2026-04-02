@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { getTextContent } from "@/utils/get-text-content";
 import { useParams } from "react-router";
 import { Send, Square, Check, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -124,7 +125,7 @@ export function ConversationDetailPage() {
                     : "bg-muted",
                 )}
               >
-                {msg.content}
+                {getTextContent(msg)}
               </div>
             </div>
           ))}

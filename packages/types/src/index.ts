@@ -8,6 +8,7 @@ export type {
   Feature,
   FeatureRevision,
   PrdDocument,
+  ContentBlock,
   ConversationMessage,
   GeneratedChanges,
   Conversation,

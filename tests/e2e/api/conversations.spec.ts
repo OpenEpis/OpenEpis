@@ -241,6 +241,19 @@ test.describe("Conversation SSE messaging", () => {
       expect(userMsgs.length).toBeGreaterThanOrEqual(2);
       expect(assistantMsgs.length).toBeGreaterThanOrEqual(2);
 
+      // Verify content is ContentBlock[] on all messages
+      for (const msg of detail.messages) {
+        expect(Array.isArray(msg.content)).toBeTruthy();
+        for (const block of msg.content) {
+          expect(block.type).toBeTruthy();
+        }
+      }
+
+      // Verify user messages have text blocks
+      for (const msg of userMsgs) {
+        expect(msg.content.some((b: { type: string }) => b.type === "text")).toBeTruthy();
+      }
+
       // Verify interleaving: user messages should come before their assistant responses
       let lastUserIdx = -1;
       for (let i = 0; i < detail.messages.length; i++) {
@@ -274,7 +287,9 @@ test.describe("Conversation SSE messaging", () => {
 
       const userMsg = detail.messages.find((m: { role: string }) => m.role === "user");
       expect(userMsg).toBeTruthy();
-      expect(userMsg.content).toContain("hello");
+      expect(Array.isArray(userMsg.content)).toBeTruthy();
+      expect(userMsg.content[0].type).toBe("text");
+      expect(userMsg.content[0].text).toContain("hello");
 
       const assistantMsg = detail.messages.find((m: { role: string }) => m.role === "assistant");
       expect(assistantMsg).toBeTruthy();

@@ -16,12 +16,14 @@ The server SHALL implement `IBddContextService` (from `@openepis/core`) as an ad
 
 ### Requirement: Agent lifecycle in message endpoint
 
-The message endpoint SHALL create a BDD agent, subscribe to its events, stream SSE to the client, and persist results on completion. The full lifecycle: read DB state → build `BddAgentOptions` → create agent → subscribe → prompt → stream → persist.
+The message endpoint SHALL create a BDD agent, subscribe to its events, stream SSE to the client, and persist results on completion. The full lifecycle: read DB state -> build `BddAgentOptions` -> create agent -> subscribe -> prompt -> stream -> persist.
+
+The `convert.ts` module SHALL perform lossless block-to-block mapping between `ContentBlock[]` and pi-ai message types. Tool result messages SHALL no longer be dropped.
 
 #### Scenario: Agent creation with full context
 
 - **WHEN** the server handles `POST /api/conversations/:id/messages`
-- **THEN** it reads the conversation, project, LLM config, and feature index from the database, constructs `BddAgentOptions`, and calls `createBddAgent()`
+- **THEN** it reads the conversation, project, LLM config, and feature index from the database, constructs `BddAgentOptions` with `messages` containing `ContentBlock[]` content, and calls `createBddAgent()`
 
 #### Scenario: Pi Agent events mapped to SSE
 
@@ -33,10 +35,10 @@ The message endpoint SHALL create a BDD agent, subscribe to its events, stream S
 - **WHEN** the agent emits `tool_execution_end` for the `update_bdd` tool
 - **THEN** the server calls `mergeChanges(conversation.pendingChanges, event.result)` and writes a `bdd-change` SSE event with the accumulated changes
 
-#### Scenario: Agent completion persists state
+#### Scenario: Agent completion persists all message types
 
 - **WHEN** the agent emits `agent_end`
-- **THEN** the server persists the updated `messages` array (including the new assistant message) and `pending_changes` to the conversation record, sends a `done` SSE event, and closes the stream
+- **THEN** the server converts all agent messages via `fromPiMessages()` — including user, assistant, and tool_result messages — persists the updated `messages` array and `pending_changes` to the conversation record, sends a `done` SSE event, and closes the stream
 
 ### Requirement: LLM config resolution for agent
 
