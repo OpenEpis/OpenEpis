@@ -5,6 +5,8 @@ import {
   createBddAgent,
   mergeChanges,
   fromPiMessages,
+  loadPrompts,
+  loadSkills,
   type FeatureSummary,
   type ModelConfig,
 } from "@openepis/core";
@@ -142,6 +144,14 @@ export async function conversationRoutes(
         providerConfig: llmConfig.provider_config ?? undefined,
       };
 
+      // Load prompts, skills, and MCP tools from datadir
+      const datadirPath = opts.container.resolve(TOKENS.DataDir);
+      const prompts = await loadPrompts(datadirPath, project.name);
+      const mcpManager = opts.container.resolve(TOKENS.McpManager);
+      const skills = await loadSkills(datadirPath, mcpManager.getServerNames());
+      const skillInstructions = skills.map((s) => ({ name: s.name, instructions: s.instructions }));
+      const externalTools = mcpManager.getTools();
+
       // Create context service and agent
       // NOTE: Don't add the user message to initial messages here —
       // agent.prompt(content) will add it automatically.
@@ -149,12 +159,15 @@ export async function conversationRoutes(
       const agent = createBddAgent({
         projectId,
         projectName: project.name,
+        prompts,
         featureIndex,
         relatedFeatures: [],
         messages: existingMessages,
         pendingChanges: conv.pending_changes,
         model: modelConfig,
         contextService,
+        externalTools,
+        skillInstructions,
         maxSteps: 10,
       });
 

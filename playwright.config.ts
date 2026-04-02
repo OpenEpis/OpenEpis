@@ -1,9 +1,15 @@
+import { resolve } from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 import { config } from "dotenv";
 
 // Load .env.test so test-specific variables are available to both
 // Playwright and any server processes it spawns.
 const testEnv = config({ path: ".env.test" });
+
+// Resolve OPENEPIS_DATA_DIR to absolute path (server cwd differs from repo root)
+if (testEnv.parsed?.OPENEPIS_DATA_DIR) {
+  testEnv.parsed.OPENEPIS_DATA_DIR = resolve(testEnv.parsed.OPENEPIS_DATA_DIR);
+}
 
 export default defineConfig({
   testDir: "./tests/e2e",

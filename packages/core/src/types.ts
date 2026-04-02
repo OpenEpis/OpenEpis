@@ -1,4 +1,6 @@
+import type { AgentTool } from "@mariozechner/pi-agent-core";
 import type { BddStep, GeneratedChanges, ConversationMessage } from "@openepis/types";
+import type { LoadedPrompts } from "./datadir/prompt-loader.js";
 
 /** Feature summary — for search results and Layer 1 index */
 export interface FeatureSummary {
@@ -45,6 +47,7 @@ export interface ModelConfig {
 export interface BddAgentOptions {
   projectId: string;
   projectName: string;
+  prompts: LoadedPrompts;
   featureIndex: FeatureSummary[];
   relatedFeatures: FeatureDetail[];
   prdContent?: string;
@@ -52,5 +55,8 @@ export interface BddAgentOptions {
   pendingChanges: GeneratedChanges | null;
   model: ModelConfig;
   contextService: IBddContextService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  externalTools?: AgentTool<any>[];
+  skillInstructions?: Array<{ name: string; instructions: string }>;
   maxSteps?: number;
 }

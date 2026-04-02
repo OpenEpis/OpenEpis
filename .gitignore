@@ -10,6 +10,9 @@ dist
 playwright-report/
 test-results/
 
+# Test datadir
+.test-datadir/
+
 # openspec: ignore active changes (personal workspace), keep archive
 openspec/changes/*/
 !openspec/changes/archive/

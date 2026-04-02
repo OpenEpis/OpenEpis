@@ -21,8 +21,10 @@
   "dependencies": {
     "@mariozechner/pi-agent-core": "^0.61.0",
     "@mariozechner/pi-ai": "^0.61.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@openepis/types": "workspace:*",
     "@sinclair/typebox": "^0.34.0",
-    "@openepis/types": "workspace:*"
+    "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

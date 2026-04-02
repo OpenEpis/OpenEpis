@@ -1,3 +1,5 @@
+import { mkdir, readdir, unlink } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
@@ -28,4 +30,32 @@ export default async function globalSetup() {
   }
 
   await client.end();
+
+  // Clean up test datadir skills from previous runs
+  const datadirPath = resolve(process.env.OPENEPIS_DATA_DIR || ".test-datadir");
+  const skillsDir = join(datadirPath, "skills");
+  await mkdir(skillsDir, { recursive: true });
+  try {
+    const files = await readdir(skillsDir);
+    for (const f of files) {
+      if (f.endsWith(".md")) await unlink(join(skillsDir, f));
+    }
+  } catch {
+    // ok if empty
+  }
+
+  // Set up .mcp.json with echo test server for MCP integration tests.
+  // The server reads this at startup, so it must be in place before dev:server starts.
+  const { writeFile } = await import("node:fs/promises");
+  const echoServerPath = resolve("tests/e2e/fixtures/echo-mcp-server.ts");
+  const mcpConfig = {
+    mcpServers: {
+      "echo-test": {
+        transport: "stdio",
+        command: "node",
+        args: ["--import", "tsx/esm", echoServerPath],
+      },
+    },
+  };
+  await writeFile(join(datadirPath, ".mcp.json"), JSON.stringify(mcpConfig, null, 2));
 }

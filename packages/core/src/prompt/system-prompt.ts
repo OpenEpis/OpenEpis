@@ -1,25 +1,21 @@
 import type { FeatureSummary, FeatureDetail } from "../types.js";
-import {
-  ROLE_TEMPLATE,
-  BDD_FORMAT_INSTRUCTIONS,
-  TOOL_USAGE_GUIDANCE,
-  CONVERSATION_GUIDANCE,
-} from "./templates.js";
+import type { LoadedPrompts } from "../datadir/prompt-loader.js";
 
 export interface SystemPromptOptions {
-  projectName: string;
+  prompts: LoadedPrompts;
   featureIndex: FeatureSummary[];
   relatedFeatures: FeatureDetail[];
   prdContent?: string;
+  skillInstructions?: Array<{ name: string; instructions: string }>;
 }
 
 export function buildSystemPrompt(options: SystemPromptOptions): string {
-  const { projectName, featureIndex, relatedFeatures, prdContent } = options;
+  const { prompts, featureIndex, relatedFeatures, prdContent, skillInstructions } = options;
 
   const sections: string[] = [];
 
-  // Role definition
-  sections.push(ROLE_TEMPLATE.replace("{projectName}", projectName));
+  // Role definition (already has projectName substituted)
+  sections.push(prompts.role);
 
   // Layer 1 — Feature Index (always loaded)
   if (featureIndex.length > 0) {
@@ -55,10 +51,17 @@ export function buildSystemPrompt(options: SystemPromptOptions): string {
     sections.push(`## PRD Context\n\n${prdContent}`);
   }
 
-  // Instructions
-  sections.push(BDD_FORMAT_INSTRUCTIONS);
-  sections.push(TOOL_USAGE_GUIDANCE);
-  sections.push(CONVERSATION_GUIDANCE);
+  // Instructions from prompt files
+  sections.push(prompts.bddFormat);
+  sections.push(prompts.toolUsage);
+  sections.push(prompts.conversation);
+
+  // Skill instructions
+  if (skillInstructions && skillInstructions.length > 0) {
+    for (const skill of skillInstructions) {
+      sections.push(`## Skill: ${skill.name}\n\n${skill.instructions}`);
+    }
+  }
 
   return sections.join("\n\n");
 }

@@ -21,25 +21,28 @@ const getModelDynamic = getModel as (provider: string, modelId: string) => AnyMo
 export function createBddAgent(options: BddAgentOptions): Agent {
   const {
     projectId,
-    projectName,
+    prompts,
     featureIndex,
     relatedFeatures,
     prdContent,
     messages,
     model: modelConfig,
     contextService,
+    externalTools,
+    skillInstructions,
   } = options;
 
-  // Build system prompt with three-layer context
+  // Build system prompt with three-layer context + skills
   const systemPrompt = buildSystemPrompt({
-    projectName,
+    prompts,
     featureIndex,
     relatedFeatures,
     prdContent,
+    skillInstructions,
   });
 
-  // Create tools
-  const tools = createTools(contextService, projectId);
+  // Create tools (core + external)
+  const tools = [...createTools(contextService, projectId), ...(externalTools ?? [])];
 
   // Resolve model — use getModel for known providers, construct Model for custom baseUrl
   let model: AnyModel;

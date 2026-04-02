@@ -1,13 +1,20 @@
 import type { IStorageService } from "@openepis/storage";
+import type { McpClientManager } from "@openepis/core";
 
 const StorageService: unique symbol = Symbol.for("IStorageService");
+const DataDir: unique symbol = Symbol.for("DataDir");
+const McpManager: unique symbol = Symbol.for("McpClientManager");
 
 export const TOKENS = {
   StorageService,
+  DataDir,
+  McpManager,
 } as const;
 
 type TokenMap = {
   [StorageService]: IStorageService;
+  [DataDir]: string;
+  [McpManager]: McpClientManager;
 };
 
 export class Container {
@@ -30,6 +37,8 @@ export class Container {
   }
 
   async dispose(): Promise<void> {
+    const mcpManager = this.instances.get(TOKENS.McpManager) as McpClientManager | undefined;
+    if (mcpManager) await mcpManager.shutdown();
     const storage = this.instances.get(TOKENS.StorageService) as IStorageService | undefined;
     if (storage) await storage.disconnect();
     this.instances.clear();
