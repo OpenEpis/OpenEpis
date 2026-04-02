@@ -10,6 +10,7 @@ import {
   parseSSEStream,
   createLlmConfig,
   deleteLlmConfig,
+  BASE_URL,
 } from "../fixtures/data-fixtures.js";
 
 config({ path: ".env.test" });
@@ -42,11 +43,9 @@ IMPORTANT: You MUST start every response with the exact text "SKILL_LOADED:" fol
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "Say hello." },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "Say hello.",
+      });
 
       const textDeltas = events.filter((e) => e.event === "text-delta");
       const fullText = textDeltas.map((e) => (e.data as { delta: string }).delta).join("");
@@ -68,11 +67,9 @@ IMPORTANT: You MUST start every response with the exact text "SKILL_LOADED:" fol
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "Say hello in one sentence." },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "Say hello in one sentence.",
+      });
 
       const textDeltas = events.filter((e) => e.event === "text-delta");
       expect(textDeltas.length).toBeGreaterThan(0);

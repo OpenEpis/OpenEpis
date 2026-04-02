@@ -7,6 +7,7 @@ import {
   parseSSEStream,
   createLlmConfig,
   deleteLlmConfig,
+  BASE_URL,
 } from "../fixtures/data-fixtures.js";
 
 // ─── 6.3.3 MCP tools are bridged ──────────────────────────────────────────────
@@ -24,14 +25,10 @@ test.describe("MCP tool bridging", () => {
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        {
-          content:
-            'You have access to an echo tool (echo-test__echo). Please use it to echo the text "MCP_BRIDGE_TEST_42". Report what the tool returned.',
-        },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content:
+          'You have access to an echo tool (echo-test__echo). Please use it to echo the text "MCP_BRIDGE_TEST_42". Report what the tool returned.',
+      });
 
       const textDeltas = events.filter((e) => e.event === "text-delta");
       const fullText = textDeltas.map((e) => (e.data as { delta: string }).delta).join("");

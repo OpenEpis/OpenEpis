@@ -7,6 +7,7 @@ import {
   parseSSEStream,
   createLlmConfig,
   deleteLlmConfig,
+  BASE_URL,
 } from "../fixtures/data-fixtures.js";
 
 test.describe("Agent behavior", () => {
@@ -24,11 +25,9 @@ test.describe("Agent behavior", () => {
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "为用户收藏功能写BDD" },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "为用户收藏功能写BDD",
+      });
 
       const bddChanges = events.filter((e) => e.event === "bdd-change");
       expect(bddChanges.length).toBeGreaterThan(0);
@@ -82,11 +81,9 @@ test.describe("Agent behavior", () => {
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "为用户搜索功能写BDD" },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "为用户搜索功能写BDD",
+      });
 
       const bddChanges = events.filter((e) => e.event === "bdd-change");
       expect(bddChanges.length).toBeGreaterThan(0);
@@ -117,7 +114,7 @@ test.describe("Agent behavior", () => {
     const conv = await convRes.json();
 
     try {
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "为订单管理功能写BDD",
       });
 
@@ -154,11 +151,9 @@ test.describe("Agent behavior", () => {
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "为用户注册功能写BDD测试场景" },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "为用户注册功能写BDD测试场景",
+      });
 
       expect(events.some((e) => e.event === "done")).toBeTruthy();
 
@@ -222,7 +217,7 @@ test.describe("Agent behavior", () => {
     const conv = await convRes.json();
 
     try {
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "在已有的用户登录功能基础上，增加记住密码的场景",
       });
 
@@ -256,7 +251,7 @@ test.describe("Agent behavior", () => {
     const conv = await convRes.json();
 
     try {
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "为购物车功能写BDD",
       });
 
@@ -264,7 +259,7 @@ test.describe("Agent behavior", () => {
       const first = await firstRes.json();
       expect(first.pending_changes).not.toBeNull();
 
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "再加一个场景：用户可以修改商品数量",
       });
 

@@ -1,4 +1,4 @@
-import { test as apiTest, expect } from "./api-fixture.js";
+import { test as apiTest, expect, BASE_URL } from "./api-fixture.js";
 import type { APIRequestContext } from "@playwright/test";
 import { config } from "dotenv";
 
@@ -178,4 +178,5 @@ export const test = apiTest.extend<DataFixtures>({
 });
 
 export { expect } from "@playwright/test";
+export { BASE_URL };
 export { createProject, deleteProject, createLlmConfig, deleteLlmConfig };

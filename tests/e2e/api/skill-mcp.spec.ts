@@ -10,6 +10,7 @@ import {
   parseSSEStream,
   createLlmConfig,
   deleteLlmConfig,
+  BASE_URL,
 } from "../fixtures/data-fixtures.js";
 
 config({ path: ".env.test" });
@@ -42,11 +43,9 @@ When the user asks you to greet them, you MUST use the echo-test__echo tool with
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "Greet me. My name is TestUser123." },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "Greet me. My name is TestUser123.",
+      });
 
       const textDeltas = events.filter((e) => e.event === "text-delta");
       const fullText = textDeltas.map((e) => (e.data as { delta: string }).delta).join("");
@@ -84,11 +83,9 @@ When responding, you MUST always include the exact text "MISSING_MCP_LOADED" som
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "Say hello." },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "Say hello.",
+      });
 
       const textDeltas = events.filter((e) => e.event === "text-delta");
       const fullText = textDeltas.map((e) => (e.data as { delta: string }).delta).join("");

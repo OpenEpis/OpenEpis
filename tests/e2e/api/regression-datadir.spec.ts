@@ -19,6 +19,7 @@ import {
   parseSSEStream,
   createLlmConfig,
   deleteLlmConfig,
+  BASE_URL,
 } from "../fixtures/data-fixtures.js";
 
 test.describe("Regression: datadir migration", () => {
@@ -35,11 +36,9 @@ test.describe("Regression: datadir migration", () => {
 
     try {
       // Generate BDD
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "为用户登录功能写BDD测试场景" },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "为用户登录功能写BDD测试场景",
+      });
 
       const bddChanges = events.filter((e) => e.event === "bdd-change");
       expect(bddChanges.length).toBeGreaterThan(0);

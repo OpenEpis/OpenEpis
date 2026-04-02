@@ -7,6 +7,7 @@ import {
   parseSSEStream,
   createLlmConfig,
   deleteLlmConfig,
+  BASE_URL,
 } from "../fixtures/data-fixtures.js";
 
 // ─── 6.1.1 Health endpoint (validates datadir bootstrap didn't break startup) ───
@@ -32,11 +33,9 @@ test.describe("Datadir prompt loading", () => {
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "Say hello in one sentence." },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "Say hello in one sentence.",
+      });
 
       const textDeltas = events.filter((e) => e.event === "text-delta");
       expect(textDeltas.length).toBeGreaterThan(0);

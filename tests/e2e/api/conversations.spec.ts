@@ -7,6 +7,7 @@ import {
   parseSSEStream,
   createLlmConfig,
   deleteLlmConfig,
+  BASE_URL,
 } from "../fixtures/data-fixtures.js";
 import crypto from "node:crypto";
 
@@ -116,11 +117,9 @@ test.describe("Conversation SSE messaging", () => {
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "Say hello in one sentence." },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "Say hello in one sentence.",
+      });
 
       const textDeltas = events.filter((e) => e.event === "text-delta");
       expect(textDeltas.length).toBeGreaterThan(0);
@@ -146,11 +145,9 @@ test.describe("Conversation SSE messaging", () => {
     const conv = await convRes.json();
 
     try {
-      const events = await parseSSEStream(
-        "http://localhost:3001",
-        `/api/conversations/${conv.id}/messages`,
-        { content: "为用户收藏功能写BDD测试场景" },
-      );
+      const events = await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
+        content: "为用户收藏功能写BDD测试场景",
+      });
 
       const bddChanges = events.filter((e) => e.event === "bdd-change");
       expect(bddChanges.length).toBeGreaterThan(0);
@@ -170,7 +167,7 @@ test.describe("Conversation SSE messaging", () => {
 
   test("send empty message returns 400", async ({ testConversation }) => {
     const { conversation } = testConversation;
-    const res = await fetch(`http://localhost:3001/api/conversations/${conversation.id}/messages`, {
+    const res = await fetch(`${BASE_URL}/api/conversations/${conversation.id}/messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: "" }),
@@ -182,7 +179,7 @@ test.describe("Conversation SSE messaging", () => {
 
   test("send message to non-existent conversation returns 404", async () => {
     const fakeId = crypto.randomUUID();
-    const res = await fetch(`http://localhost:3001/api/conversations/${fakeId}/messages`, {
+    const res = await fetch(`${BASE_URL}/api/conversations/${fakeId}/messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: "hello" }),
@@ -200,7 +197,7 @@ test.describe("Conversation SSE messaging", () => {
 
     try {
       // No LLM config created — should fail with LLM_CONFIG_MISSING
-      const res = await fetch(`http://localhost:3001/api/conversations/${conv.id}/messages`, {
+      const res = await fetch(`${BASE_URL}/api/conversations/${conv.id}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: "hello" }),
@@ -223,12 +220,12 @@ test.describe("Conversation SSE messaging", () => {
 
     try {
       // First message
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "Say hello in one sentence.",
       });
 
       // Second message
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "Say goodbye in one sentence.",
       });
 
@@ -277,7 +274,7 @@ test.describe("Conversation SSE messaging", () => {
     const conv = await convRes.json();
 
     try {
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "Say hello in one sentence.",
       });
 
@@ -315,7 +312,7 @@ test.describe("Conversation Apply / Discard", () => {
     const conv = await convRes.json();
 
     try {
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "为购物车功能写BDD测试场景",
       });
 
@@ -352,12 +349,12 @@ test.describe("Conversation Apply / Discard", () => {
 
     try {
       // First turn: generate BDD
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "为用户注册功能写BDD测试场景",
       });
 
       // Second turn: add more scenarios
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "再加一个场景：邮箱格式无效时注册失败",
       });
 
@@ -406,7 +403,7 @@ test.describe("Conversation Apply / Discard", () => {
     const conv = await convRes.json();
 
     try {
-      await parseSSEStream("http://localhost:3001", `/api/conversations/${conv.id}/messages`, {
+      await parseSSEStream(BASE_URL, `/api/conversations/${conv.id}/messages`, {
         content: "为用户登录功能写BDD测试场景",
       });
 

@@ -7,6 +7,7 @@ import {
   deleteLlmConfig,
   hasLlmConfig,
   parseSSEStream,
+  BASE_URL,
   type SSEEvent,
 } from "../fixtures/data-fixtures.js";
 import { llmJudge, type JudgeResult } from "./judge.js";
@@ -14,7 +15,6 @@ import { evalScenarios, type HardAssertions } from "./scenarios.js";
 
 // --- Constants ---
 
-const BASE_URL = "http://localhost:3001";
 const SCENARIO_TIMEOUT = 300_000;
 
 // --- Score bands ---

@@ -11,6 +11,9 @@ if (testEnv.parsed?.OPENEPIS_DATA_DIR) {
   testEnv.parsed.OPENEPIS_DATA_DIR = resolve(testEnv.parsed.OPENEPIS_DATA_DIR);
 }
 
+const apiPort = process.env.PORT ?? testEnv.parsed?.PORT ?? "3001";
+const apiBaseURL = `http://localhost:${apiPort}`;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -27,7 +30,7 @@ export default defineConfig({
       name: "api",
       testDir: "./tests/e2e/api",
       use: {
-        baseURL: "http://localhost:3001",
+        baseURL: apiBaseURL,
       },
     },
     {
@@ -42,14 +45,14 @@ export default defineConfig({
       name: "eval",
       testDir: "./tests/e2e/eval",
       use: {
-        baseURL: "http://localhost:3001",
+        baseURL: apiBaseURL,
       },
     },
   ],
   webServer: [
     {
       command: "pnpm dev:server",
-      url: "http://localhost:3001/api/health",
+      url: `${apiBaseURL}/api/health`,
       reuseExistingServer: false,
       timeout: 30000,
       env: {
