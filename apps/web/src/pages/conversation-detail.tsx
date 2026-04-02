@@ -118,6 +118,7 @@ export function ConversationDetailPage() {
               )}
             >
               <div
+                data-testid="conversation-detail-message"
                 className={cn(
                   "max-w-[80%] rounded-lg px-4 py-2 text-sm whitespace-pre-wrap",
                   msg.role === "user"
@@ -143,7 +144,7 @@ export function ConversationDetailPage() {
           {/* Loading indicator */}
           {isStreaming && !streamingText && (
             <div className="flex justify-start">
-              <div className="rounded-lg bg-muted px-4 py-2 text-sm text-muted-foreground">
+              <div className="rounded-lg bg-muted px-4 py-2 text-sm text-muted-foreground" data-testid="conversation-detail-thinking">
                 <span className="animate-pulse">{t("conversations.thinking")}</span>
               </div>
             </div>
@@ -157,6 +158,7 @@ export function ConversationDetailPage() {
           <form onSubmit={handleSubmit} className="flex gap-2">
             <textarea
               ref={inputRef}
+              data-testid="conversation-detail-textarea"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -166,11 +168,11 @@ export function ConversationDetailPage() {
               disabled={isStreaming}
             />
             {isStreaming ? (
-              <Button type="button" variant="outline" size="icon" onClick={abort}>
+              <Button type="button" variant="outline" size="icon" data-testid="conversation-detail-stop-btn" onClick={abort}>
                 <Square className="h-4 w-4" />
               </Button>
             ) : (
-              <Button type="submit" size="icon" disabled={!input.trim()}>
+              <Button type="submit" size="icon" data-testid="conversation-detail-send-btn" disabled={!input.trim()}>
                 <Send className="h-4 w-4" />
               </Button>
             )}
@@ -179,19 +181,19 @@ export function ConversationDetailPage() {
       </div>
 
       {/* BDD Preview Panel (right) */}
-      <div className="w-96 flex-shrink-0 border-l overflow-y-auto">
+      <div className="w-96 flex-shrink-0 border-l overflow-y-auto" data-testid="bdd-preview-panel">
         <div className="p-4 space-y-4">
           <h2 className="text-lg font-semibold">{t("conversations.bddPreview")}</h2>
 
           {!pendingChanges && (
-            <p className="text-sm text-muted-foreground">{t("conversations.noChanges")}</p>
+            <p className="text-sm text-muted-foreground" data-testid="bdd-preview-empty">{t("conversations.noChanges")}</p>
           )}
 
           {pendingChanges && (
             <>
               {/* New features */}
               {pendingChanges.new_features.map((feature, i) => (
-                <Card key={`new-${i}`}>
+                <Card key={`new-${i}`} data-testid="bdd-preview-new-feature">
                   <CardHeader className="py-3">
                     <div className="flex items-center gap-2">
                       <Badge variant="default">{t("conversations.new")}</Badge>
@@ -218,7 +220,7 @@ export function ConversationDetailPage() {
 
               {/* Modified features */}
               {pendingChanges.modified_features.map((mod, i) => (
-                <Card key={`mod-${i}`}>
+                <Card key={`mod-${i}`} data-testid="bdd-preview-modified-feature">
                   <CardHeader className="py-3">
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary">{t("conversations.modified")}</Badge>
@@ -264,6 +266,7 @@ export function ConversationDetailPage() {
               <div className="flex gap-2">
                 <Button
                   className="flex-1"
+                  data-testid="bdd-preview-apply-btn"
                   onClick={handleApply}
                   disabled={applyChanges.isPending}
                 >
@@ -273,6 +276,7 @@ export function ConversationDetailPage() {
                 <Button
                   variant="outline"
                   className="flex-1"
+                  data-testid="bdd-preview-discard-btn"
                   onClick={() => setDiscardDialogOpen(true)}
                   disabled={discardChanges.isPending}
                 >

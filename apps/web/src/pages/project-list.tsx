@@ -27,7 +27,7 @@ export function ProjectListPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("projects.title")}</h1>
         <Button asChild>
-          <Link to="/projects/new">
+          <Link to="/projects/new" data-testid="project-list-create-btn">
             <Plus className="mr-2 h-4 w-4" />
             {t("projects.createProject")}
           </Link>
@@ -48,7 +48,7 @@ export function ProjectListPage() {
       )}
 
       {data && data.projects.length === 0 && (
-        <Card className="py-12 text-center">
+        <Card className="py-12 text-center" data-testid="project-list-empty">
           <p className="mb-4 text-muted-foreground">
             {t("projects.emptyState")}
           </p>
@@ -64,7 +64,7 @@ export function ProjectListPage() {
       {data && data.projects.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {data.projects.map((project) => (
-            <Link key={project.id} to={`/projects/${project.id}`}>
+            <Link key={project.id} to={`/projects/${project.id}`} data-testid="project-list-card">
               <Card className="transition-colors hover:border-primary/30">
                 <CardHeader>
                   <CardTitle className="text-lg">{project.name}</CardTitle>

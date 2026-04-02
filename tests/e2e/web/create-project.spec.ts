@@ -25,6 +25,6 @@ test.describe("Create project page", () => {
     await page.goto("/projects/new");
     await page.getByRole("button", { name: /^Create$/i }).click();
 
-    await expect(page.getByText(/name is required/i)).toBeVisible();
+    await expect(page.getByTestId("create-project-name-error")).toBeVisible();
   });
 });

@@ -51,12 +51,13 @@ export function CreateProjectPage() {
               </label>
               <Input
                 id="name"
+                data-testid="create-project-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t("createProject.namePlaceholder")}
               />
               {nameError && (
-                <p className="text-sm text-destructive">{nameError}</p>
+                <p className="text-sm text-destructive" data-testid="create-project-name-error">{nameError}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -65,6 +66,7 @@ export function CreateProjectPage() {
               </label>
               <Textarea
                 id="description"
+                data-testid="create-project-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("createProject.descriptionPlaceholder")}
@@ -74,6 +76,7 @@ export function CreateProjectPage() {
             <div className="flex gap-2">
               <Button
                 type="submit"
+                data-testid="create-project-submit"
                 disabled={createProject.isPending}
               >
                 {createProject.isPending ? t("createProject.creating") : t("createProject.create")}
@@ -81,6 +84,7 @@ export function CreateProjectPage() {
               <Button
                 type="button"
                 variant="outline"
+                data-testid="create-project-cancel"
                 onClick={() => navigate(-1)}
               >
                 {t("common.cancel")}

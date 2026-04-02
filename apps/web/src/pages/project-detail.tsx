@@ -98,7 +98,7 @@ export function ProjectDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{project.name}</h1>
+        <h1 className="text-2xl font-bold" data-testid="project-detail-name">{project.name}</h1>
         {project.description && (
           <p className="mt-1 text-muted-foreground">{project.description}</p>
         )}
@@ -116,7 +116,7 @@ export function ProjectDetailPage() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card data-testid="project-detail-feature-count">
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
             <FileText className="h-4 w-4 text-muted-foreground" />
             <CardDescription>{t("projectDetail.features")}</CardDescription>
@@ -125,7 +125,7 @@ export function ProjectDetailPage() {
             <p className="text-2xl font-bold">{project.feature_count}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card data-testid="project-detail-repo-count">
           <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
             <GitBranch className="h-4 w-4 text-muted-foreground" />
             <CardDescription>{t("projectDetail.repositories")}</CardDescription>
@@ -138,10 +138,10 @@ export function ProjectDetailPage() {
 
       <div className="flex items-center gap-3">
         <Button asChild variant="outline">
-          <Link to={`/projects/${projectId}/features`}>{t("projectDetail.viewFeatures")}</Link>
+          <Link to={`/projects/${projectId}/features`} data-testid="project-detail-view-features">{t("projectDetail.viewFeatures")}</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link to={`/projects/${projectId}/conversations`}>
+          <Link to={`/projects/${projectId}/conversations`} data-testid="project-detail-conversations">
             <MessageSquare className="mr-2 h-4 w-4" />
             {t("projectDetail.conversations")}
           </Link>
@@ -155,7 +155,7 @@ export function ProjectDetailPage() {
           <h2 className="text-lg font-semibold">{t("projectDetail.repositories")}</h2>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
             <DialogTrigger asChild>
-              <Button size="sm">
+              <Button size="sm" data-testid="project-detail-add-repo-btn">
                 <Plus className="mr-2 h-4 w-4" />
                 {t("projectDetail.addRepository")}
               </Button>
@@ -222,7 +222,7 @@ export function ProjectDetailPage() {
         )}
 
         {repoData?.repositories.map((repo) => (
-          <Card key={repo.id}>
+          <Card key={repo.id} data-testid="project-detail-repo-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3">
               <div>
                 <CardTitle className="text-sm font-medium">

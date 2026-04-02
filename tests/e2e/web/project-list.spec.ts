@@ -5,8 +5,8 @@ test.describe("Project list page", () => {
     const project = await createProject(api, { name: `E2E Project ${Date.now()}` });
 
     await page.goto("/projects");
-    const main = page.getByRole("main");
-    await expect(main.getByText(project.name).first()).toBeVisible();
+    const cards = page.getByTestId("project-list-card");
+    await expect(cards.filter({ hasText: project.name }).first()).toBeVisible();
 
     await deleteProject(api, project.id);
   });

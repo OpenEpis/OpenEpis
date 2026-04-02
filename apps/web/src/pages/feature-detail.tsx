@@ -47,7 +47,7 @@ export function FeatureDetailPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold">{feature.title}</h1>
+          <h1 className="text-2xl font-bold" data-testid="feature-detail-title">{feature.title}</h1>
           {feature.description && (
             <p className="text-muted-foreground">{feature.description}</p>
           )}
@@ -55,6 +55,7 @@ export function FeatureDetailPage() {
         <Button asChild variant="outline" size="sm">
           <Link
             to={`/projects/${projectId}/features/${featureId}/revisions`}
+            data-testid="feature-detail-history-btn"
           >
             <History className="mr-2 h-4 w-4" />
             {t("featureDetail.history")}
@@ -86,7 +87,7 @@ export function FeatureDetailPage() {
           {t("featureDetail.scenarios", { count: feature.scenarios.length })}
         </h2>
         {feature.scenarios.map((scenario) => (
-          <Card key={scenario.id}>
+          <Card key={scenario.id} data-testid="feature-detail-scenario-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">{scenario.title}</CardTitle>
               {scenario.tags.length > 0 && (

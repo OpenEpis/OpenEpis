@@ -62,13 +62,14 @@ export function FeatureListPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("features.searchPlaceholder")}
+            data-testid="feature-list-search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-8"
           />
         </div>
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36" data-testid="feature-list-status-filter">
             <SelectValue placeholder={t("features.allStatuses")} />
           </SelectTrigger>
           <SelectContent>
@@ -94,7 +95,7 @@ export function FeatureListPage() {
       )}
 
       {data && data.features.length === 0 && (
-        <Card className="py-12 text-center">
+        <Card className="py-12 text-center" data-testid="feature-list-empty">
           <p className="text-muted-foreground">
             {t("features.emptyState")}
           </p>
@@ -107,6 +108,7 @@ export function FeatureListPage() {
             <Link
               key={feature.id}
               to={`/projects/${projectId}/features/${feature.id}`}
+              data-testid="feature-list-card"
             >
               <Card className="transition-colors hover:border-primary/30">
                 <CardHeader className="py-4">

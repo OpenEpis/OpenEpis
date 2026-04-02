@@ -12,7 +12,7 @@ test.describe("Conversation list page", () => {
   test("show empty state", async ({ page, testProject }) => {
     await page.goto(`/projects/${testProject.id}/conversations`);
     await expect(page.getByRole("heading", { name: "Conversations" })).toBeVisible();
-    await expect(page.getByText("No conversations yet")).toBeVisible();
+    await expect(page.getByTestId("conversation-list-empty")).toBeVisible();
   });
 
   test("create new conversation and navigate to detail page", async ({ page, testProject }) => {
@@ -31,7 +31,7 @@ test.describe("Conversation list page", () => {
     await page.goto(`/projects/${testProject.id}/conversations`);
 
     // Should show conversation entries (with "Conversation" text and message count)
-    const cards = page.locator("[class*=cursor-pointer]").filter({ hasText: "Conversation" });
+    const cards = page.getByTestId("conversation-list-card");
     await expect(cards).toHaveCount(2);
 
     // cleanup
@@ -45,14 +45,14 @@ test.describe("Conversation list page", () => {
     await page.goto(`/projects/${testProject.id}/conversations`);
 
     // Should show 1 conversation
-    const cards = page.locator("[class*=cursor-pointer]").filter({ hasText: "Conversation" });
+    const cards = page.getByTestId("conversation-list-card");
     await expect(cards).toHaveCount(1);
 
     // Click delete button (trash icon)
-    await cards.first().getByRole("button").click();
+    await cards.first().getByTestId("conversation-list-delete-btn").click();
 
     // Should show empty state
-    await expect(page.getByText("No conversations yet")).toBeVisible();
+    await expect(page.getByTestId("conversation-list-empty")).toBeVisible();
   });
 });
 
@@ -76,8 +76,8 @@ test.describe("Conversation chat page", () => {
     const { project, conversation } = testConversation;
     await page.goto(`/projects/${project.id}/conversations/${conversation.id}`);
 
-    await expect(page.locator("textarea")).toBeVisible();
-    await expect(page.getByRole("main").getByRole("button")).toBeVisible();
+    await expect(page.getByTestId("conversation-detail-textarea")).toBeVisible();
+    await expect(page.getByTestId("conversation-detail-send-btn")).toBeVisible();
   });
 
   test("send message and see user bubble and streaming assistant reply", async ({
@@ -89,7 +89,7 @@ test.describe("Conversation chat page", () => {
     const { project, conversation } = testConversation;
     await page.goto(`/projects/${project.id}/conversations/${conversation.id}`);
 
-    const textarea = page.locator("textarea");
+    const textarea = page.getByTestId("conversation-detail-textarea");
     await textarea.fill("Say hi in one short sentence.");
     await textarea.press("Enter");
 
@@ -97,15 +97,15 @@ test.describe("Conversation chat page", () => {
     await expect(page.getByText("Say hi in one short sentence.")).toBeVisible();
 
     // Wait for thinking indicator or streaming text
-    await expect(page.getByText("Thinking...").first()).toBeVisible({
+    await expect(page.getByTestId("conversation-detail-thinking")).toBeVisible({
       timeout: 15_000,
     });
 
     // Wait for assistant reply to finish (no more thinking indicator)
-    await expect(page.getByText("Thinking...")).toBeHidden({ timeout: 90_000 });
+    await expect(page.getByTestId("conversation-detail-thinking")).toBeHidden({ timeout: 90_000 });
 
     // Should have at least two message bubbles (user + assistant)
-    const messageBubbles = page.locator(".rounded-lg.px-4.py-2");
+    const messageBubbles = page.getByTestId("conversation-detail-message");
     await expect(messageBubbles).toHaveCount(2, { timeout: 5_000 });
   });
 });
@@ -136,9 +136,9 @@ test.describe("BDD preview panel", () => {
     await page.goto(`/projects/${project.id}/conversations/${conversation.id}`);
 
     // Initially shows "No pending BDD changes"
-    await expect(page.getByText("No pending BDD changes")).toBeVisible();
+    await expect(page.getByTestId("bdd-preview-empty")).toBeVisible();
 
-    const textarea = page.locator("textarea");
+    const textarea = page.getByTestId("conversation-detail-textarea");
     await textarea.fill("为用户登录功能写BDD测试场景");
     await textarea.press("Enter");
 
@@ -146,7 +146,7 @@ test.describe("BDD preview panel", () => {
     await expect(page.getByText("New").first()).toBeVisible({ timeout: 90_000 });
 
     // Should show Given/When/Then steps
-    const previewPanel = page.locator(".border-l");
+    const previewPanel = page.getByTestId("bdd-preview-panel");
     await expect(previewPanel.getByText("Given").first()).toBeVisible();
     await expect(previewPanel.getByText("When").first()).toBeVisible();
     await expect(previewPanel.getByText("Then").first()).toBeVisible();
@@ -176,7 +176,7 @@ test.describe("Apply / Discard buttons", () => {
     await page.goto(`/projects/${project.id}/conversations/${conversation.id}`);
 
     // Generate BDD
-    const textarea = page.locator("textarea");
+    const textarea = page.getByTestId("conversation-detail-textarea");
     await textarea.fill("为购物车功能写BDD测试场景");
     await textarea.press("Enter");
 
@@ -184,13 +184,13 @@ test.describe("Apply / Discard buttons", () => {
     await expect(page.getByText("New").first()).toBeVisible({ timeout: 90_000 });
 
     // Wait for streaming to finish — textarea re-enabled means the agent is done
-    await expect(page.locator("textarea")).toBeEnabled({ timeout: 30_000 });
+    await expect(page.getByTestId("conversation-detail-textarea")).toBeEnabled({ timeout: 30_000 });
 
     // Click Apply All
-    await page.getByRole("button", { name: /Apply All/i }).click();
+    await page.getByTestId("bdd-preview-apply-btn").click();
 
     // Pending changes should be cleared
-    await expect(page.getByText("No pending BDD changes")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId("bdd-preview-empty")).toBeVisible({ timeout: 30_000 });
   });
 
   test("click Discard shows confirmation and clears pending changes", async ({
@@ -203,16 +203,16 @@ test.describe("Apply / Discard buttons", () => {
     await page.goto(`/projects/${project.id}/conversations/${conversation.id}`);
 
     // Generate BDD
-    const textarea = page.locator("textarea");
+    const textarea = page.getByTestId("conversation-detail-textarea");
     await textarea.fill("为注册功能写BDD测试场景");
     await textarea.press("Enter");
 
     // Wait for BDD to appear and streaming to finish
     await expect(page.getByText("New").first()).toBeVisible({ timeout: 90_000 });
-    await expect(page.locator("textarea")).toBeEnabled({ timeout: 30_000 });
+    await expect(page.getByTestId("conversation-detail-textarea")).toBeEnabled({ timeout: 30_000 });
 
     // Click Discard
-    await page.getByRole("button", { name: /Discard/i }).click();
+    await page.getByTestId("bdd-preview-discard-btn").click();
 
     // Confirmation dialog should appear
     await expect(page.getByText("Discard Changes?")).toBeVisible();
@@ -224,6 +224,6 @@ test.describe("Apply / Discard buttons", () => {
       .click();
 
     // Pending changes should be cleared
-    await expect(page.getByText("No pending BDD changes")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId("bdd-preview-empty")).toBeVisible({ timeout: 30_000 });
   });
 });

@@ -45,20 +45,21 @@ export function ConversationListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("conversations.title")}</h1>
-        <Button onClick={handleCreate} disabled={createConversation.isPending}>
+        <Button onClick={handleCreate} disabled={createConversation.isPending} data-testid="conversation-list-new-btn">
           <Plus className="mr-2 h-4 w-4" />
           {t("conversations.new")}
         </Button>
       </div>
 
       {data?.conversations.length === 0 && (
-        <p className="text-sm text-muted-foreground">{t("conversations.emptyState")}</p>
+        <p className="text-sm text-muted-foreground" data-testid="conversation-list-empty">{t("conversations.emptyState")}</p>
       )}
 
       {data?.conversations.map((conv) => (
         <Card
           key={conv.id}
           className="cursor-pointer transition-colors hover:bg-muted/50"
+          data-testid="conversation-list-card"
           onClick={() => navigate(`/projects/${projectId}/conversations/${conv.id}`)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3">
@@ -78,6 +79,7 @@ export function ConversationListPage() {
               variant="ghost"
               size="icon"
               className="h-8 w-8"
+              data-testid="conversation-list-delete-btn"
               onClick={(e) => {
                 e.stopPropagation();
                 deleteConversation.mutate(conv.id);
