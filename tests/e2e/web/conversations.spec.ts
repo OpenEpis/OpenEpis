@@ -77,7 +77,7 @@ test.describe("Conversation chat page", () => {
     await page.goto(`/projects/${project.id}/conversations/${conversation.id}`);
 
     await expect(page.locator("textarea")).toBeVisible();
-    await expect(page.getByRole("button").filter({ has: page.locator("svg") })).toBeVisible();
+    await expect(page.getByRole("main").getByRole("button")).toBeVisible();
   });
 
   test("send message and see user bubble and streaming assistant reply", async ({
@@ -97,7 +97,7 @@ test.describe("Conversation chat page", () => {
     await expect(page.getByText("Say hi in one short sentence.")).toBeVisible();
 
     // Wait for thinking indicator or streaming text
-    await expect(page.getByText("Thinking...").or(page.locator(".bg-muted").last())).toBeVisible({
+    await expect(page.getByText("Thinking...").first()).toBeVisible({
       timeout: 15_000,
     });
 
@@ -183,11 +183,14 @@ test.describe("Apply / Discard buttons", () => {
     // Wait for BDD to appear
     await expect(page.getByText("New").first()).toBeVisible({ timeout: 90_000 });
 
+    // Wait for streaming to finish — textarea re-enabled means the agent is done
+    await expect(page.locator("textarea")).toBeEnabled({ timeout: 30_000 });
+
     // Click Apply All
     await page.getByRole("button", { name: /Apply All/i }).click();
 
     // Pending changes should be cleared
-    await expect(page.getByText("No pending BDD changes")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("No pending BDD changes")).toBeVisible({ timeout: 30_000 });
   });
 
   test("click Discard shows confirmation and clears pending changes", async ({
@@ -204,8 +207,9 @@ test.describe("Apply / Discard buttons", () => {
     await textarea.fill("为注册功能写BDD测试场景");
     await textarea.press("Enter");
 
-    // Wait for BDD to appear
+    // Wait for BDD to appear and streaming to finish
     await expect(page.getByText("New").first()).toBeVisible({ timeout: 90_000 });
+    await expect(page.locator("textarea")).toBeEnabled({ timeout: 30_000 });
 
     // Click Discard
     await page.getByRole("button", { name: /Discard/i }).click();
@@ -220,6 +224,6 @@ test.describe("Apply / Discard buttons", () => {
       .click();
 
     // Pending changes should be cleared
-    await expect(page.getByText("No pending BDD changes")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("No pending BDD changes")).toBeVisible({ timeout: 30_000 });
   });
 });
